@@ -1,5 +1,5 @@
-### IDEAS - Institute of Data Engineering, Analytics and Science Foundation
-**Spring Internship Program 2026**
+### Imagedata Augmentation and Image Classification
+**IDEAS - Institute of Data Engineering, Analytics and Science Foundation Spring Internship Program 2026**
 
 ---
 
@@ -296,6 +296,3 @@ Labels batch shape: torch.Size([64])
 
 * **Augmented Image Size:** $255 \times 255$ pixels across 3 RGB channels.
 * **Mini-batch Configuration:** 64 items per parallel execution window batch step with automatic structural shuffling active.
-```
-
-```
