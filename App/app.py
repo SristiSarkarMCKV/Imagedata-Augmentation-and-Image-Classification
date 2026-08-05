@@ -19,7 +19,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects robust CSS styling using uniform wrapper spacing to guarantee consistent gaps across all viewports."""
+    """Injects robust CSS styling using uniform wrapper spacing and vertical centering to eliminate top sticking."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -34,16 +34,28 @@ def inject_custom_styles(bg_url):
         "::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.7); }\n"
         "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #FF781F, #FF9800, #F57C00); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.25); }\n"
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
-        ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
         
-        "/* Main Adaptive Glassmorphism Container */\n"
+        "/* FULL VIEWPORT CENTERING FOR STAPP */\n"
+        ".stApp {\n"
+        "  background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "');\n"
+        "  background-attachment: fixed;\n"
+        "  background-size: cover;\n"
+        "  background-position: center;\n"
+        "  min-height: 100vh;\n"
+        "  display: flex;\n"
+        "  align-items: center;\n"
+        "  justify-content: center;\n"
+        "}\n"
+        
+        "/* Main Adaptive Glassmorphism Container - Middle Aligned */\n"
         ".block-container {\n"
         "  background: rgba(255, 255, 255, 0.95);\n"
         "  color: #1A202C;\n"
         "  border-radius: 28px;\n"
         "  padding: 24px 20px !important;\n"
-        "  margin-top: 10px;\n"
-        "  margin-bottom: 10px;\n"
+        "  margin: auto !important;\n"
+        "  max-width: 720px;\n"
+        "  width: 100%;\n"
         "  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);\n"
         "  backdrop-filter: blur(14px);\n"
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
@@ -120,11 +132,11 @@ def inject_custom_styles(bg_url):
         "div[data-testid='stFileUploader'] { border: 2px dashed #4ECDC4; border-radius: 14px; background: rgba(247, 250, 252, 0.4); padding: 8px; transition: all 0.3s ease; }\n"
         "div[data-testid='stFileUploader']:hover { border-color: #FF6B6B; transform: translateY(-1px); }\n"
         
-        "/* FORCE FIXED ASPECT RATIO CONTAINER FOR UNIFORM SAMPLE IMAGE SIZES */\n"
-        ".sample-img-container { width: 100%; height: 110px; overflow: hidden; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #000000; margin-bottom: 4px; }\n"
+        "/* FORCE FIXED ASPECT RATIO CONTAINER FOR UNIFORM SAMPLE IMAGE SIZES & PREVENT OVERLAPS */\n"
+        ".sample-img-container { width: 100%; height: 85px; overflow: hidden; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #000000; margin-bottom: 2px; }\n"
         ".sample-img-container img { width: 100%; height: 100%; object-fit: cover; }\n"
 
-        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.82rem; border-radius: 10px; border: none; padding: 6px 10px; width: 100%; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35); }\n"
+        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.72rem; border-radius: 8px; border: none; padding: 4px 6px; width: 100%; min-height: 38px; line-height: 1.1; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35); }\n"
         ".stButton>button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5); }\n"
         
         "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 1.6rem !important; color: #3182CE !important; font-weight: 800; }\n"
@@ -435,7 +447,7 @@ elif nav_choice == "🔮 Prediction":
             
             for i in range(4):
                 with cols[i]:
-                    st.markdown(f"<div style='text-align: center; font-weight: 700; font-size: 0.8rem; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='text-align: center; font-weight: 700; font-size: 0.72rem; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
                     st.markdown(f"<div class='sample-img-container'><img src='{sample_images[sample_keys[i]]}' /></div>", unsafe_allow_html=True)
                     if st.button(f"🚀 Analyze {sample_keys[i]}", key=f"btn_{i}"):
                         st.session_state.selected_sample_url = sample_images[sample_keys[i]]
@@ -443,7 +455,7 @@ elif nav_choice == "🔮 Prediction":
             cols_row2 = st.columns(4)
             for i in range(4, 8):
                 with cols_row2[i-4]:
-                    st.markdown(f"<div style='text-align: center; font-weight: 700; font-size: 0.8rem; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='text-align: center; font-weight: 700; font-size: 0.72rem; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
                     st.markdown(f"<div class='sample-img-container'><img src='{sample_images[sample_keys[i]]}' /></div>", unsafe_allow_html=True)
                     if st.button(f"🚀 Analyze {sample_keys[i]}", key=f"btn_{i}"):
                         st.session_state.selected_sample_url = sample_images[sample_keys[i]]
