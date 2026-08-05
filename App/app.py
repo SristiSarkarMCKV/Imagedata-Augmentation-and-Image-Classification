@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects custom CSS styling for high visibility and crisp mobile view."""
+    """Injects custom CSS styling with strict responsive constraints."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -53,87 +53,127 @@ def inject_custom_styles(bg_url):
     st.markdown(css, unsafe_allow_html=True)
 
 
-def render_mixed_flowchart():
-    """Renders a responsive flowchart with fixed 15px text matching body font size."""
+def render_css_flowchart():
+    """Renders a fully responsive zero-scroll HTML/CSS diagram with body-sized text."""
     html_code = """
     <!DOCTYPE html>
     <html>
     <head>
-      <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ 
-            startOnLoad: true, 
-            theme: 'neutral',
-            flowchart: { useMaxWidth: false, htmlLabels: true }
-        });
-      </script>
       <style>
-        body {
-            margin: 0;
-            padding: 10px;
-            font-family: 'Poppins', sans-serif;
-            background: transparent;
-            display: flex;
-            justify-content: center;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+          font-family: 'Poppins', sans-serif; 
+          background: transparent; 
+          padding: 5px;
         }
-        .mermaid {
-            width: 100%;
+        .flow-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
         }
-        .mermaid text {
-            font-size: 15px !important;
-            font-family: 'Poppins', sans-serif !important;
-            font-weight: 600 !important;
+        .flow-section {
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          border-radius: 12px;
+          padding: 12px;
         }
-        .node rect, .node circle, .node polygon {
-            stroke-width: 2px !important;
+        .section-title {
+          font-size: 0.85rem;
+          font-weight: 800;
+          color: #4A5568;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 8px;
         }
-        .edgeLabel {
-            background-color: #ffffff !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
+        .step-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          align-items: center;
+        }
+        .node {
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: #2D3748;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+          flex: 1 1 auto;
+          min-width: 130px;
+          justify-content: center;
+          text-align: center;
+        }
+        .node-gray { background: #EDF2F7; border: 1.5px solid #CBD5E0; }
+        .node-blue { background: #EBF8FF; border: 1.5px solid #90CDF4; color: #2B6CB0; }
+        .node-orange { background: #FFFAF0; border: 1.5px solid #FBD38D; color: #C05621; }
+        .node-green { background: #F0FFF4; border: 1.5px solid #9AE6B4; color: #276749; }
+        .arrow {
+          color: #A0AEC0;
+          font-weight: bold;
+          font-size: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .down-arrow {
+          text-align: center;
+          font-size: 1.2rem;
+          color: #CBD5E0;
+          margin: -4px 0;
         }
       </style>
     </head>
     <body>
-      <div class="mermaid">
-      graph TD
-        subgraph Step1 ["1️⃣ INPUT PREPROCESSING (Horizontal)"]
-            direction LR
-            A["📥 Upload Image"] --> B["📸 Read RGB Data"]
-            B --> C["📏 Resize 224x224"]
-            C --> D["⚖️ Normalize Tensors"]
-        end
+      <div class="flow-wrapper">
+        
+        <!-- STEP 1 -->
+        <div class="flow-section">
+          <div class="section-title">1️⃣ Input Preprocessing</div>
+          <div class="step-grid">
+            <div class="node node-gray">📥 Upload Image</div>
+            <div class="arrow">➔</div>
+            <div class="node node-gray">📸 Read RGB Data</div>
+            <div class="arrow">➔</div>
+            <div class="node node-gray">📏 Resize 224x224</div>
+            <div class="arrow">➔</div>
+            <div class="node node-gray">⚖️ Normalize Tensors</div>
+          </div>
+        </div>
 
-        subgraph Step2 ["2️⃣ MODEL INFERENCE & LOGIC (Horizontal)"]
-            direction LR
-            D2["🧠 ResNet50 Architecture"] --> E["📈 Probabilities (Softmax)"]
-            E --> F{"❓ Top Match Cat / Dog?"}
-        end
+        <div class="down-arrow">⬇️</div>
 
-        subgraph Step3 ["3️⃣ FINAL OUTPUT CLASSIFICATION (Horizontal)"]
-            direction LR
-            G1["🏁 Result: CAT / DOG"]
-            G2["🏁 Result: OTHER"]
-        end
+        <!-- STEP 2 -->
+        <div class="flow-section">
+          <div class="section-title">2️⃣ Deep Learning Model Inference</div>
+          <div class="step-grid">
+            <div class="node node-blue">🧠 ResNet50 Neural Network</div>
+            <div class="arrow">➔</div>
+            <div class="node node-blue">📈 Softmax Probabilities</div>
+          </div>
+        </div>
 
-        Step1 --> Step2
-        F -- "Yes" --> G1
-        F -- "No" --> G2
+        <div class="down-arrow">⬇️</div>
 
-        classDef inputStyle fill:#E2E8F0,stroke:#4A5568,stroke-width:2px,rx:8,ry:8;
-        classDef modelStyle fill:#C4F1F9,stroke:#00B5D8,stroke-width:2px,rx:8,ry:8,color:#000;
-        classDef decisionStyle fill:#FEEBC8,stroke:#DD6B20,stroke-width:2px,color:#000;
-        classDef resultStyle fill:#C6F6D5,stroke:#38A169,stroke-width:2px,rx:8,ry:8,color:#000;
+        <!-- STEP 3 -->
+        <div class="flow-section">
+          <div class="section-title">3️⃣ Group Logic & Final Output</div>
+          <div class="step-grid">
+            <div class="node node-orange">❓ Is Top Match Cat or Dog?</div>
+            <div class="arrow">➔</div>
+            <div class="node node-green">🏁 Classify Cat / Dog</div>
+            <div class="node node-green">🏁 Classify Other</div>
+          </div>
+        </div>
 
-        class A,B,C,D inputStyle;
-        class D2,E modelStyle;
-        class F decisionStyle;
-        class G1,G2 resultStyle;
       </div>
     </body>
     </html>
     """
-    components.html(html_code, height=520, scrolling=True)
+    components.html(html_code, height=430, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -282,7 +322,7 @@ if nav_choice == "🏠 Home":
     st.markdown("#### 📊 Visual Workflow Diagram")
     
     st.markdown('<div class="diagram-container">', unsafe_allow_html=True)
-    render_mixed_flowchart()
+    render_css_flowchart()
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("")
