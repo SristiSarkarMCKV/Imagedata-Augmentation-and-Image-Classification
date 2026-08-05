@@ -49,7 +49,7 @@ def inject_custom_styles(bg_url):
 
         "/* UNIFORM SECTION WRAPPER TO FORCE CONSISTENT GAPS */\n"
         ".content-section {\n"
-        "  margin-top: 18px !important;\n"
+        "  margin-top: 100px !important;\n"
         "  margin-bottom: 0px !important;\n"
         "}\n"
 
