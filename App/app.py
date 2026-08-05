@@ -1,10 +1,11 @@
+import base64
 import streamlit as st
 import torch
 from PIL import Image
 from torchvision import models
 
 # ---------------------------------------------------------
-# Page Setup & Configuration
+# Page Setup & Base Configuration
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Pet Image Classifier",
@@ -12,78 +13,75 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS for UI styling, card animations, and background tints
-st.markdown("""
-    <style>
-    /* Main Background Accent */
-    .stApp {
-        background-color: #f8f9fa;
-    }
-    
-    /* Header Styling */
-    .main-title {
-        text-align: center;
-        color: #2E7D32;
-        font-size: 2.8rem;
-        font-weight: 800;
-        margin-bottom: 0px;
-    }
-    
-    .sub-writeup {
-        text-align: center;
-        font-size: 1.15rem;
-        color: #424242;
-        line-height: 1.6;
-        margin-top: 10px;
-        margin-bottom: 25px;
-        padding: 0 15px;
-    }
+# Background GIFs / Images URLs
+DEFAULT_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJvZTBkY3NmY2Y3OXBzZW43bjZsdGRzYXhiZnA0dms4ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vUc341wCXiY4U/giphy.gif" # Representative image from uploaded pet media
+CAT_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnJ2MXhhZjh5a2R2ZnByZnRwMHFmeWpxdHZid3Rhbms4Y3gzZnB4eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JIX9t2j0ZTN9S/giphy.gif"
+DOG_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9kZDV5ZDFid3V2bnFmYmFiM3pzaHByNDR6Y2k0cnE2MThqazk0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4Zo41lhzKt6iZ8xff9/giphy.gif"
+OTHER_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2F3OXFvNHZxdzMzbTVtd2Z6OXg3Z2VjNWN4ZGZidXpxd2xnb2s2byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/H5C8CevNMbpBqNqFjl/giphy.gif"
 
-    /* Card Box Container */
-    .report-card {
-        background-color: #ffffff;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #e0e0e0;
-    }
+def set_dynamic_background(bg_url):
+    """Injects CSS to update the full-page background dynamically."""
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("{bg_url}");
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }}
+        
+        /* Container Glassmorphism Styling */
+        .block-container {{
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 20px;
+            padding: 30px !important;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }}
 
-    /* Custom File Uploader Border */
-    div[data-testid="stFileUploader"] {
-        background-color: #ffffff;
-        border: 2px dashed #2E7D32;
-        border-radius: 15px;
-        padding: 15px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    
-    /* Center GIF alignment */
-    .gif-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 15px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+        .main-title {{
+            text-align: center;
+            color: #1A237E;
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }}
 
+        .sub-writeup {{
+            text-align: center;
+            font-size: 1.1rem;
+            color: #333333;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }}
+
+        div[data-testid="stFileUploader"] {{
+            border: 2px dashed #1A237E;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9);
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# Set initial default background
+set_dynamic_background(DEFAULT_BG)
 
 # ---------------------------------------------------------
-# Header & Intro Section (With Animated Header GIF)
+# Header & Instructions
 # ---------------------------------------------------------
-st.markdown(
-    '<div class="gif-container">'
-    '<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnR5eDRxZjR4eXpza3YxeThxN3BxbnJ4eGg2Z3R4ZnNxeXF3ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o72F8t9TDi2xVnxOE/giphy.gif" width="120">'
-    '</div>',
-    unsafe_allow_html=True
-)
-
 st.markdown("<h1 class='main-title'>Pet Image Classifier</h1>", unsafe_allow_html=True)
 
 st.markdown(
     "<p class='sub-writeup'>"
-    "Welcome! Upload an image below, and our smart AI model will automatically analyze it. "
-    "Once processed, the website will specify whether the uploaded image is a <b>Cat</b>, "
-    "a <b>Dog</b>, or <b>Other</b> (any object, person, or non-pet animal)."
+    "Once the image is uploaded, the type of pet—whether it is a <b>Cat</b>, <b>Dog</b>, "
+    "or <b>Other</b>—will be specified by the website."
     "</p>", 
     unsafe_allow_html=True
 )
@@ -92,11 +90,10 @@ st.divider()
 
 
 # ---------------------------------------------------------
-# AI Model & Robust Classifier Pipeline
+# Model Loading & Classification Logic
 # ---------------------------------------------------------
 @st.cache_resource
 def load_classifier():
-    # Pre-trained ResNet-50 model with ImageNet V2 weights
     weights = models.ResNet50_Weights.DEFAULT
     model = models.resnet50(weights=weights)
     model.eval()
@@ -108,10 +105,6 @@ def load_classifier():
 model, transform, categories = load_classifier()
 
 def process_and_classify(image, confidence_threshold=0.25):
-    """
-    Evaluates image against comprehensive ImageNet taxonomy to accurately
-    distinguish Cats, Dogs, and Other non-pet images.
-    """
     input_tensor = transform(image).unsqueeze(0)
     
     with torch.no_grad():
@@ -122,7 +115,6 @@ def process_and_classify(image, confidence_threshold=0.25):
     top_label = categories[top_catid.item()].lower()
     score = top_prob.item() * 100
 
-    # Comprehensive taxonomy search keywords
     cat_keywords = [
         'cat', 'tabby', 'tiger cat', 'persian cat', 'siamese cat', 'siamese', 
         'egyptian cat', 'cougar', 'lynx', 'leopard', 'panther', 'cheetah', 'jaguar', 'lion'
@@ -149,49 +141,46 @@ def process_and_classify(image, confidence_threshold=0.25):
 
 
 # ---------------------------------------------------------
-# Upload Tab Section
+# File Upload Tab
 # ---------------------------------------------------------
-st.markdown("### 📥 Step 1: Upload Your Image")
 uploaded_file = st.file_uploader(
-    "Drag and drop or choose an image file...", 
+    "Upload an image of a pet or object...", 
     type=["jpg", "jpeg", "png", "webp"]
 )
 
 
 # ---------------------------------------------------------
-# Analysis & Output Report
+# Analysis Report & Dynamic GIF Change
 # ---------------------------------------------------------
 if uploaded_file is not None:
     st.divider()
-    st.markdown("### 📊 Step 2: Analysis Report")
+    st.markdown("### 📊 Analysis Report")
 
     image = Image.open(uploaded_file).convert("RGB")
     
-    # Grid column layout
-    col1, col2 = st.columns([1, 1], gap="large")
+    col1, col2 = st.columns([1, 1], gap="medium")
 
     with col1:
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
     with col2:
-        with st.spinner("🔍 AI is inspecting visual features..."):
+        with st.spinner("Analyzing visual features..."):
             pred_class, score, raw_label = process_and_classify(image)
 
-        # Result badge & animated response GIFs
+        # Dynamic Background update based on prediction
         if pred_class == "Cat":
+            set_dynamic_background(CAT_BG)
             st.success("🐱 **Specified Pet Type: CAT**")
-            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnJ2MXhhZjh5a2R2ZnByZnRwMHFmeWpxdHZid3Rhbms4Y3gzZnB4eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JIX9t2j0ZTN9S/giphy.gif", width=220)
         elif pred_class == "Dog":
+            set_dynamic_background(DOG_BG)
             st.success("🐶 **Specified Pet Type: DOG**")
-            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9kZDV5ZDFid3V2bnFmYmFiM3pzaHByNDR6Y2k0cnE2MThqazk0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4Zo41lhzKt6iZ8xff9/giphy.gif", width=220)
         else:
-            st.warning("⚠️ **Specified Pet Type: OTHER / NOT A CAT OR DOG**")
-            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2F3OXFvNHZxdzMzbTVtd2Z6OXg3Z2VjNWN4ZGZidXpxd2xnb2s2byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/H5C8CevNMbpBqNqFjl/giphy.gif", width=220)
+            set_dynamic_background(OTHER_BG)
+            st.warning("⚠️ **Specified Pet Type: OTHER / UNKNOWN**")
 
         st.metric(label="Prediction Certainty", value=f"{score:.2f}%")
         st.progress(min(int(score), 100))
 
-        # Expandable inspection box
-        with st.expander("🔬 View Model Detection Details"):
-            st.write(f"**Identified ImageNet Feature:** `{raw_label.title()}`")
-            st.write(f"**Assigned Group:** `{pred_class}`")
+        with st.expander("🔬 Technical Details"):
+            st.write(f"**Primary Feature Detected:** `{raw_label.title()}`")
+            st.write(f"**Classification Category:** `{pred_class}`")
