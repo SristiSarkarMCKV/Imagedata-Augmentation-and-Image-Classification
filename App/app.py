@@ -51,7 +51,7 @@ def inject_custom_styles(bg_url):
 
         "/* UNIFORM SECTION WRAPPER TO FORCE CONSISTENT GAPS */\n"
         ".content-section {\n"
-        "  margin-top: 100px !important;\n"
+        "  margin-top: 18px !important;\n"
         "  margin-bottom: 0px !important;\n"
         "}\n"
 
@@ -309,6 +309,10 @@ if 'page' not in st.session_state:
     st.session_state.page = 'upload'
 if 'uploaded_file' not in st.session_state:
     st.session_state.uploaded_file = None
+if 'source_mode' not in st.session_state:
+    st.session_state.source_mode = 'Upload Image'
+if 'selected_sample_url' not in st.session_state:
+    st.session_state.selected_sample_url = None
 
 def switch_to_prediction():
     st.session_state.nav = '🔮 Prediction'
@@ -377,54 +381,83 @@ elif nav_choice == "🔮 Prediction":
     if st.session_state.page == 'upload':
         st.markdown(
             "<p class='sub-text'>"
-            "Upload any pet image or select a sample image below to analyze it. "
+            "Select a source and choose or upload an image to analyze. "
             "The model will classify whether it is a <span class='highlight-text'>🐱 Cat</span> "
             "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>"
             "</p>", 
             unsafe_allow_html=True
         )
 
-        st.markdown("### 📥 Step 1: Upload Your Image")
-        file = st.file_uploader(
-            "Choose a pet image file (JPG, JPEG, PNG, WEBP)", 
-            type=["jpg", "jpeg", "png", "webp"],
+        st.markdown("**Source:**")
+        st.session_state.source_mode = st.radio(
+            "Source",
+            ["Upload Image", "Sample Images"],
+            horizontal=True,
+            key='source_mode_radio',
             label_visibility="collapsed"
         )
 
-        if file is not None:
-            st.session_state.uploaded_file = file
-            image = Image.open(file).convert("RGB")
-            st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
-            def go_to_results(): st.session_state.page = 'results'
-            st.button("🚀 Analyze Image & View Results", on_click=go_to_results)
+        if st.session_state.source_mode == "Upload Image":
+            st.markdown("### 📥 Upload Your Image")
+            file = st.file_uploader(
+                "Choose a pet image file (JPG, JPEG, PNG, WEBP)", 
+                type=["jpg", "jpeg", "png", "webp"],
+                label_visibility="collapsed"
+            )
 
-        st.markdown('<div class="content-section">', unsafe_allow_html=True)
-        st.markdown("### ✨ Or Choose a Sample Preset Image")
-        st.markdown('</div>', unsafe_allow_html=True)
+            if file is not None:
+                st.session_state.uploaded_file = file
+                image = Image.open(file).convert("RGB")
+                st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
+                def go_to_results(): st.session_state.page = 'results'
+                st.button("🚀 Analyze Image and View Results", on_click=go_to_results)
 
-        sample_images = {
-            "🐱 Sample Cat (Tabby)": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&auto=format&fit=crop&q=80",
-            "🐶 Sample Dog (Golden Retriever)": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&auto=format&fit=crop&q=80",
-            "🐱 Sample Cat (Siamese)": "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400&auto=format&fit=crop&q=80",
-            "🐶 Sample Dog (German Shepherd)": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&auto=format&fit=crop&q=80"
-        }
+        else:
+            st.markdown("### Select a Sample Image:")
+            
+            sample_images = {
+                "SAMPLE 1": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 2": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 3": "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 4": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 5": "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 6": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 7": "https://images.unsplash.com/photo-1561948955-570b270e7c36?w=400&auto=format&fit=crop&q=80",
+                "SAMPLE 8": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&auto=format&fit=crop&q=80"
+            }
 
-        s_col1, s_col2 = st.columns(2)
-        idx = 0
-        for label_name, img_url in sample_images.items():
-            target_col = s_col1 if idx % 2 == 0 else s_col2
-            with target_col:
-                st.image(img_url, caption=label_name, use_container_width=True)
-                if st.button(f"Select {label_name.split()[1]} {label_name.split()[2]}", key=f"sample_btn_{idx}"):
+            cols = st.columns(4)
+            sample_keys = list(sample_images.keys())
+            
+            for i in range(4):
+                with cols[i]:
+                    st.markdown(f"**{sample_keys[i]}**")
+                    st.image(sample_images[sample_keys[i]], use_container_width=True)
+                    if st.button(sample_keys[i], key=f"btn_{i}"):
+                        st.session_state.selected_sample_url = sample_images[sample_keys[i]]
+
+            cols_row2 = st.columns(4)
+            for i in range(4, 8):
+                with cols_row2[i-4]:
+                    st.markdown(f"**{sample_keys[i]}**")
+                    st.image(sample_images[sample_keys[i]], use_container_width=True)
+                    if st.button(sample_keys[i], key=f"btn_{i}"):
+                        st.session_state.selected_sample_url = sample_images[sample_keys[i]]
+
+            if st.session_state.selected_sample_url:
+                st.markdown("---")
+                st.markdown("#### Selected Sample Preview:")
+                st.image(st.session_state.selected_sample_url, width=250)
+                
+                def analyze_sample():
                     try:
-                        response = requests.get(img_url)
-                        sample_img_file = BytesIO(response.content)
-                        st.session_state.uploaded_file = sample_img_file
+                        response = requests.get(st.session_state.selected_sample_url)
+                        st.session_state.uploaded_file = BytesIO(response.content)
                         st.session_state.page = 'results'
-                        st.rerun()
                     except Exception as e:
-                        st.error(f"Could not load sample image: {e}")
-            idx += 1
+                        st.error(f"Error loading sample image: {e}")
+
+                st.button("🚀 Analyze Image and View Results", on_click=analyze_sample)
 
     elif st.session_state.page == 'results':
         st.markdown("<h2 style='text-align: center; font-family: Outfit, sans-serif;'>📋 Analysis Report</h2>", unsafe_allow_html=True)
@@ -464,7 +497,8 @@ elif nav_choice == "🔮 Prediction":
             def go_to_upload():
                 st.session_state.page = 'upload'
                 st.session_state.uploaded_file = None
-            st.button("🔄 Upload / Choose Another Image", on_click=go_to_upload)
+                st.session_state.selected_sample_url = None
+            st.button("🔄 Back to Selection", on_click=go_to_upload)
         else:
             st.warning("No image found!")
             def go_to_upload():
@@ -494,5 +528,5 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-    
+
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
