@@ -37,7 +37,7 @@ def inject_custom_styles(bg_url):
         ".feature-card { background: #F7FAFC; border-radius: 16px; padding: 20px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.15rem; margin-bottom: 8px; }\n"
         ".feature-card-desc { color: #718096; font-size: 0.9rem; line-height: 1.5; }\n"
-        ".diagram-container { background: #FFFFFF; padding: 15px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
+        ".diagram-container { background: #FFFFFF; padding: 10px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
         ".result-cat { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }\n"
         ".result-dog { background: linear-gradient(135deg, #4299E1, #3182CE); }\n"
@@ -54,7 +54,7 @@ def inject_custom_styles(bg_url):
 
 
 def render_css_flowchart():
-    """Renders a fully responsive zero-scroll HTML/CSS diagram with body-sized text."""
+    """Renders all 3 phases fully visible without clipping or scrolling."""
     html_code = """
     <!DOCTYPE html>
     <html>
@@ -64,19 +64,19 @@ def render_css_flowchart():
         body { 
           font-family: 'Poppins', sans-serif; 
           background: transparent; 
-          padding: 5px;
+          padding: 2px;
         }
         .flow-wrapper {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 8px;
           width: 100%;
         }
         .flow-section {
           background: #F8FAFC;
           border: 1px solid #E2E8F0;
           border-radius: 12px;
-          padding: 12px;
+          padding: 10px;
         }
         .section-title {
           font-size: 0.85rem;
@@ -84,26 +84,26 @@ def render_css_flowchart():
           color: #4A5568;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
         }
         .step-grid {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
           align-items: center;
         }
         .node {
-          padding: 8px 12px;
+          padding: 8px 10px;
           border-radius: 8px;
-          font-size: 0.95rem;
+          font-size: 0.9rem;
           font-weight: 600;
           color: #2D3748;
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 4px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.04);
           flex: 1 1 auto;
-          min-width: 130px;
+          min-width: 120px;
           justify-content: center;
           text-align: center;
         }
@@ -114,16 +114,16 @@ def render_css_flowchart():
         .arrow {
           color: #A0AEC0;
           font-weight: bold;
-          font-size: 1rem;
+          font-size: 0.9rem;
           display: flex;
           align-items: center;
           justify-content: center;
         }
         .down-arrow {
           text-align: center;
-          font-size: 1.2rem;
-          color: #CBD5E0;
-          margin: -4px 0;
+          font-size: 1rem;
+          color: #A0AEC0;
+          margin: -2px 0;
         }
       </style>
     </head>
@@ -173,7 +173,8 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    components.html(html_code, height=430, scrolling=False)
+    # Height set to 620px to ensure Step 3 is fully visible without clipping
+    components.html(html_code, height=620, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -434,7 +435,6 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-
 
 st.markdown("---")
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
