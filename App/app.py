@@ -1,10 +1,10 @@
 import streamlit as st
 import torch
 from PIL import Image
-from torchvision import models, transforms
+from torchvision import models
 
 # ---------------------------------------------------------
-# Page Configuration & Styling
+# Page Setup & Configuration
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Pet Image Classifier",
@@ -12,39 +12,78 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS for a clean, modern UI
+# Custom CSS for UI styling, card animations, and background tints
 st.markdown("""
     <style>
+    /* Main Background Accent */
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    
+    /* Header Styling */
     .main-title {
         text-align: center;
-        color: #1E88E5;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 5px;
+        color: #2E7D32;
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 0px;
     }
-    .sub-text {
+    
+    .sub-writeup {
         text-align: center;
-        font-size: 1.1rem;
-        color: #555555;
+        font-size: 1.15rem;
+        color: #424242;
+        line-height: 1.6;
+        margin-top: 10px;
         margin-bottom: 25px;
+        padding: 0 15px;
     }
+
+    /* Card Box Container */
+    .report-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
+    }
+
+    /* Custom File Uploader Border */
     div[data-testid="stFileUploader"] {
-        border: 2px dashed #1E88E5;
-        border-radius: 12px;
-        padding: 10px;
+        background-color: #ffffff;
+        border: 2px dashed #2E7D32;
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    
+    /* Center GIF alignment */
+    .gif-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------
-# Header & Subtitle Section
+# Header & Intro Section (With Animated Header GIF)
 # ---------------------------------------------------------
-st.markdown("<h1 class='main-title'>Pet image classifier</h1>", unsafe_allow_html=True)
 st.markdown(
-    "<p class='sub-text'>"
-    "Once the image is uploaded, the type of pet—whether it is a <b>Cat</b>, <b>Dog</b>, "
-    "or <b>Other</b>—will be specified by the website."
+    '<div class="gif-container">'
+    '<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnR5eDRxZjR4eXpza3YxeThxN3BxbnJ4eGg2Z3R4ZnNxeXF3ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o72F8t9TDi2xVnxOE/giphy.gif" width="120">'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown("<h1 class='main-title'>Pet Image Classifier</h1>", unsafe_allow_html=True)
+
+st.markdown(
+    "<p class='sub-writeup'>"
+    "Welcome! Upload an image below, and our smart AI model will automatically analyze it. "
+    "Once processed, the website will specify whether the uploaded image is a <b>Cat</b>, "
+    "a <b>Dog</b>, or <b>Other</b> (any object, person, or non-pet animal)."
     "</p>", 
     unsafe_allow_html=True
 )
@@ -53,27 +92,25 @@ st.divider()
 
 
 # ---------------------------------------------------------
-# Model Loading & ImageNet Mapping
+# AI Model & Robust Classifier Pipeline
 # ---------------------------------------------------------
 @st.cache_resource
 def load_classifier():
-    # Load ResNet-50 with default pre-trained ImageNet weights for robust feature recognition
+    # Pre-trained ResNet-50 model with ImageNet V2 weights
     weights = models.ResNet50_Weights.DEFAULT
     model = models.resnet50(weights=weights)
     model.eval()
     
-    # Preprocessing pipeline
     transform = weights.transforms()
     categories = weights.meta["categories"]
-    
     return model, transform, categories
 
 model, transform, categories = load_classifier()
 
-def classify_pet(image, confidence_threshold=0.30):
+def process_and_classify(image, confidence_threshold=0.25):
     """
-    Classifies if an image contains a Cat, Dog, or Other by inspecting 
-    the top predicted ImageNet class labels.
+    Evaluates image against comprehensive ImageNet taxonomy to accurately
+    distinguish Cats, Dogs, and Other non-pet images.
     """
     input_tensor = transform(image).unsqueeze(0)
     
@@ -83,64 +120,78 @@ def classify_pet(image, confidence_threshold=0.30):
     
     top_prob, top_catid = torch.max(probabilities, 0)
     top_label = categories[top_catid.item()].lower()
-    prob_score = top_prob.item() * 100
+    score = top_prob.item() * 100
 
-    # Broad keywords to match ImageNet's detailed cat/dog sub-species
-    dog_keywords = ['dog', 'retriever', 'terrier', 'spaniel', 'poodle', 'hound', 'bulldog', 'shepherd', 'husky', 'collie', 'pug', 'chihuahua', 'beagle', 'mutt']
-    cat_keywords = ['cat', 'tabby', 'cougar', 'cheetah', 'leopard', 'siamese', 'persian']
+    # Comprehensive taxonomy search keywords
+    cat_keywords = [
+        'cat', 'tabby', 'tiger cat', 'persian cat', 'siamese cat', 'siamese', 
+        'egyptian cat', 'cougar', 'lynx', 'leopard', 'panther', 'cheetah', 'jaguar', 'lion'
+    ]
+    
+    dog_keywords = [
+        'dog', 'retriever', 'terrier', 'spaniel', 'poodle', 'hound', 'bulldog', 
+        'shepherd', 'husky', 'collie', 'pug', 'chihuahua', 'beagle', 'mutt', 
+        'pinscher', 'schnauzer', 'doberman', 'rottweiler', 'corgi', 'boxer',
+        'great dane', 'st. bernard', 'pomeranian', 'chow', 'basset', 'dalmatian'
+    ]
 
-    # Determine class
-    is_dog = any(kw in top_label for kw in dog_keywords)
-    is_cat = any(kw in top_label for kw in cat_keywords)
+    is_cat = any(keyword in top_label for keyword in cat_keywords)
+    is_dog = any(keyword in top_label for keyword in dog_keywords)
 
-    if prob_score < (confidence_threshold * 100):
-        return "Other", prob_score, top_label
-    elif is_dog:
-        return "Dog", prob_score, top_label
+    if score < (confidence_threshold * 100):
+        return "Other", score, top_label
     elif is_cat:
-        return "Cat", prob_score, top_label
+        return "Cat", score, top_label
+    elif is_dog:
+        return "Dog", score, top_label
     else:
-        return "Other", prob_score, top_label
+        return "Other", score, top_label
 
 
 # ---------------------------------------------------------
-# Image Upload Tab Section
+# Upload Tab Section
 # ---------------------------------------------------------
+st.markdown("### 📥 Step 1: Upload Your Image")
 uploaded_file = st.file_uploader(
-    "Upload a Pet Image", 
+    "Drag and drop or choose an image file...", 
     type=["jpg", "jpeg", "png", "webp"]
 )
 
+
 # ---------------------------------------------------------
-# Analysis Report Display Section
+# Analysis & Output Report
 # ---------------------------------------------------------
 if uploaded_file is not None:
     st.divider()
-    st.subheader("📋 Analysis Report")
+    st.markdown("### 📊 Step 2: Analysis Report")
 
-    # Load image
     image = Image.open(uploaded_file).convert("RGB")
     
-    col1, col2 = st.columns([1, 1], gap="medium")
+    # Grid column layout
+    col1, col2 = st.columns([1, 1], gap="large")
 
     with col1:
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
     with col2:
-        with st.spinner("Analyzing image..."):
-            pred_class, score, raw_label = classify_pet(image)
+        with st.spinner("🔍 AI is inspecting visual features..."):
+            pred_class, score, raw_label = process_and_classify(image)
 
-        # Display result badge based on prediction
-        if pred_class == "Dog":
-            st.success("🐶 **Specified Pet Type: DOG**")
-        elif pred_class == "Cat":
+        # Result badge & animated response GIFs
+        if pred_class == "Cat":
             st.success("🐱 **Specified Pet Type: CAT**")
+            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnJ2MXhhZjh5a2R2ZnByZnRwMHFmeWpxdHZid3Rhbms4Y3gzZnB4eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JIX9t2j0ZTN9S/giphy.gif", width=220)
+        elif pred_class == "Dog":
+            st.success("🐶 **Specified Pet Type: DOG**")
+            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9kZDV5ZDFid3V2bnFmYmFiM3pzaHByNDR6Y2k0cnE2MThqazk0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4Zo41lhzKt6iZ8xff9/giphy.gif", width=220)
         else:
-            st.warning("❓ **Specified Pet Type: OTHER / UNKNOWN**")
+            st.warning("⚠️ **Specified Pet Type: OTHER / NOT A CAT OR DOG**")
+            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2F3OXFvNHZxdzMzbTVtd2Z6OXg3Z2VjNWN4ZGZidXpxd2xnb2s2byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/H5C8CevNMbpBqNqFjl/giphy.gif", width=220)
 
-        st.metric(label="Model Certainty", value=f"{score:.2f}%")
+        st.metric(label="Prediction Certainty", value=f"{score:.2f}%")
+        st.progress(min(int(score), 100))
 
-        st.markdown("---")
-        with st.expander("🔍 View Technical Details"):
-            st.write(f"**Detected Primary Feature:** `{raw_label.title()}`")
-            st.caption("The classification logic maps ImageNet features directly to Cat/Dog taxonomies to avoid false positive biases.")
+        # Expandable inspection box
+        with st.expander("🔬 View Model Detection Details"):
+            st.write(f"**Identified ImageNet Feature:** `{raw_label.title()}`")
+            st.write(f"**Assigned Group:** `{pred_class}`")
