@@ -2,6 +2,7 @@ import streamlit as st
 import torch
 from PIL import Image
 from torchvision import models
+
 # ---------------------------------------------------------
 # Page Setup & Configuration
 # ---------------------------------------------------------
@@ -16,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects Google Fonts, frosted glass containers, vivid orange scrollbar styling, and polished card designs."""
+    """Injects Google Fonts, frosted glass containers, vivid orange scrollbar styling, and custom UI components."""
     st.markdown(
         f"""
         <style>
@@ -69,7 +70,7 @@ def inject_custom_styles(bg_url):
             background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 3rem;
+            font-size: 2.7rem;
             font-weight: 900;
             margin-bottom: 5px;
             letter-spacing: -0.5px;
@@ -78,7 +79,7 @@ def inject_custom_styles(bg_url):
         .sub-text {{
             font-family: 'Poppins', sans-serif;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #4A5568;
             font-weight: 500;
             line-height: 1.6;
@@ -88,6 +89,51 @@ def inject_custom_styles(bg_url):
         .highlight-text {{
             color: #E53E3E;
             font-weight: 700;
+        }}
+
+        /* Top Radio Navigation Styling */
+        div[data-testid="stRadio"] > div {{
+            justify-content: center;
+            gap: 15px;
+        }}
+
+        div[data-testid="stRadio"] label {{
+            background: rgba(240, 244, 248, 0.8);
+            border: 1px solid #CBD5E0;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            transition: all 0.2s ease-in-out;
+        }}
+
+        div[data-testid="stRadio"] label:hover {{
+            border-color: #FF6B6B;
+            background: #FFFFFF;
+        }}
+
+        /* Feature Cards for Overview */
+        .feature-card {{
+            background: #F7FAFC;
+            border-radius: 16px;
+            padding: 20px;
+            border-left: 5px solid #4ECDC4;
+            height: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }}
+
+        .feature-card-title {{
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: #2D3748;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }}
+
+        .feature-card-desc {{
+            color: #718096;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }}
 
         /* Results Card Design */
@@ -234,7 +280,6 @@ def classify_image(image):
     is_cat_fallback = any(any(kw in lbl for kw in cat_keywords) for lbl in top3_labels)
     is_dog_fallback = any(any(kw in lbl for kw in dog_keywords) for lbl in top3_labels)
 
-    # Only map to Cat/Dog if it is strongly indicated; otherwise strictly assign to "Other"
     if is_cat_fallback and not is_top1_dog:
         return "Cat", top1_score, top1_label, top3_details
     elif is_dog_fallback and not is_top1_cat:
@@ -244,8 +289,12 @@ def classify_image(image):
 
 
 # ---------------------------------------------------------
-# Navigation & Session State
+# Global Navigation Header & State Management
 # ---------------------------------------------------------
+st.markdown("<h1 class='main-title'>🐾 Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
+
+if 'nav' not in st.session_state:
+    st.session_state.nav = '🏠 Home'
 if 'page' not in st.session_state:
     st.session_state.page = 'upload'
 if 'uploaded_file' not in st.session_state:
@@ -258,109 +307,212 @@ def go_to_upload():
     st.session_state.page = 'upload'
     st.session_state.uploaded_file = None
 
+def switch_to_prediction():
+    st.session_state.nav = '🔮 Prediction'
+
+# Navigation Bar
+nav_choice = st.radio(
+    "",
+    ["🏠 Home", "🔮 Prediction", "ℹ️ About"],
+    horizontal=True,
+    key='nav'
+)
+
+st.divider()
 
 # =========================================================
-# PAGE 1: UPLOAD PAGE
+# PAGE 1: HOME PAGE (SYSTEM OVERVIEW & WORKFLOW)
 # =========================================================
-if st.session_state.page == 'upload':
-    st.markdown("<h1 class='main-title'>🐾 Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
+if nav_choice == "🏠 Home":
+    st.markdown("### 🧬 Automated Deep Learning Pet Recognition Engine")
+    
     st.markdown(
-        "<p class='sub-text'>"
-        "Upload any pet image below to analyze it. "
-        "The website will classify whether it is a <span class='highlight-text'>🐱 Cat</span>, "
-        "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>!"
+        "<p style='color: #4A5568; font-size: 1rem; line-height: 1.7;'>"
+        "Welcome! This application utilizes state-of-the-art Deep Computer Vision to instantly analyze, "
+        "identify, and classify uploaded images. Built on top of a 50-layer Deep Residual Neural Network "
+        "(ResNet50), the system evaluates visual feature representations across 1,000 object categories "
+        "and intelligently maps them into concise pet classifications: 🐱 <b>Cat</b>, 🐶 <b>Dog</b>, or ❓ <b>Other</b>."
         "</p>", 
         unsafe_allow_html=True
     )
+    
+    # Workflow Pipeline Breakdown
+    st.markdown("#### ⚙️ Classification System Architecture & Workflow")
+    
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        st.markdown(
+            """
+            <div class="feature-card" style="border-left-color: #FF6B6B;">
+                <div class="feature-card-title">1. Input Preprocessing</div>
+                <div class="feature-card-desc">
+                    Raw image frames are normalized, color-space corrected (RGB), dynamic-resized to 224x224, 
+                    and converted into PyTorch floating point tensors.
+                </div>
+            </div>
+            """, unsafe_allow_html=True
+        )
+    with col_b:
+        st.markdown(
+            """
+            <div class="feature-card" style="border-left-color: #4ECDC4;">
+                <div class="feature-card-title">2. ResNet50 Inference</div>
+                <div class="feature-card-desc">
+                    Visual feature extraction occurs across deep convolutional bottleneck blocks, evaluating edge pattern activations and geometric structures.
+                </div>
+            </div>
+            """, unsafe_allow_html=True
+        )
+    with col_c:
+        st.markdown(
+            """
+            <div class="feature-card" style="border-left-color: #4299E1;">
+                <div class="feature-card-title">3. Logic & Classification</div>
+                <div class="feature-card-desc">
+                    Softmax output logits map the top predictions into targeted species groupings, calculating confidence metrics and fallback safety checks.
+                </div>
+            </div>
+            """, unsafe_allow_html=True
+        )
 
-    st.divider()
+    st.write("")
+    st.markdown("#### 🎯 Core Capabilities & Workflow Highlights")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.info("**⚡ Instant Analysis**\n\nHigh-speed tensor processing delivering real-time predictions.")
+    with col2:
+        st.success("**🔬 Deep Traversal**\n\nExamines top candidate probability distributions for sub-breed identification.")
+    with col3:
+        st.warning("**🛡️ Smart Grouping**\n\nFallback categorization logic ensuring precise non-pet filters.")
 
-    st.markdown("### 📥 Step 1: Upload Your Image")
-    file = st.file_uploader(
-        "Choose a pet image file (JPG, JPEG, PNG, WEBP)... 📸", 
-        type=["jpg", "jpeg", "png", "webp"]
+    st.write("")
+    st.button("🚀 Launch Image Classifier Engine", on_click=switch_to_prediction)
+
+
+# =========================================================
+# PAGE 2: PREDICTION / CLASSIFIER PAGE
+# =========================================================
+elif nav_choice == "🔮 Prediction":
+    if st.session_state.page == 'upload':
+        st.markdown(
+            "<p class='sub-text'>"
+            "Upload any pet image below to analyze it. "
+            "The model will classify whether it is a <span class='highlight-text'>🐱 Cat</span>, "
+            "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>!"
+            "</p>", 
+            unsafe_allow_html=True
+        )
+
+        st.markdown("### 📥 Step 1: Upload Your Image")
+        file = st.file_uploader(
+            "Choose a pet image file (JPG, JPEG, PNG, WEBP)... 📸", 
+            type=["jpg", "jpeg", "png", "webp"]
+        )
+
+        if file is not None:
+            st.session_state.uploaded_file = file
+            
+            image = Image.open(file).convert("RGB")
+            st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
+            
+            st.write("")
+            st.button("🚀 Analyze Image & View Results", on_click=go_to_results)
+
+    elif st.session_state.page == 'results':
+        st.markdown("<h2 style='text-align: center; font-family: Outfit, sans-serif;'>📋 Analysis Report</h2>", unsafe_allow_html=True)
+        st.markdown("<p class='sub-text'>Here are the classification findings from our AI model!</p>", unsafe_allow_html=True)
+        
+        if st.session_state.uploaded_file is not None:
+            image = Image.open(st.session_state.uploaded_file).convert("RGB")
+            
+            col1, col2 = st.columns([1, 1], gap="large")
+
+            with col1:
+                st.markdown("#### 🖼️ Image Preview")
+                st.image(image, use_container_width=True)
+
+            with col2:
+                with st.spinner("🧠 Scanning visual patterns... 🔍"):
+                    pred_class, score, raw_label, top3_list = classify_image(image)
+
+                # Hero Result Card
+                if pred_class == "Cat":
+                    st.markdown(
+                        """
+                        <div class="result-card result-cat">
+                            <p class="card-title">🐱 Specified Pet Type: CAT</p>
+                        </div>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+                elif pred_class == "Dog":
+                    st.markdown(
+                        """
+                        <div class="result-card result-dog">
+                            <p class="card-title">🐶 Specified Pet Type: DOG</p>
+                        </div>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"""
+                        <div class="result-card result-other">
+                            <p class="card-title">❓ Specified Pet Type: OTHER</p>
+                            <p style="margin: 5px 0 0 0; font-size: 1.05rem; opacity: 0.9;">(Detected: {raw_label.title()})</p>
+                        </div>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+
+                # AI Certainty Metric & Bar
+                st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
+                st.progress(min(int(score), 100))
+
+                # Top 3 Matches
+                st.markdown("---")
+                st.markdown("##### 📈 Top Feature Matches:")
+                for feat_name, feat_score in top3_list:
+                    st.write(f"**{feat_name}**: `{feat_score:.1f}%`")
+                    st.progress(min(int(feat_score), 100))
+
+                st.markdown("---")
+                with st.expander("🔬 View Technical Details"):
+                    st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
+                    st.write(f"🏷️ **Mapped Grouping:** `{pred_class}`")
+
+            st.divider()
+            st.button("🔄 Upload Another Image", on_click=go_to_upload)
+        else:
+            st.warning("No image found!")
+            st.button("⬅️ Back to Upload Page", on_click=go_to_upload)
+
+
+# =========================================================
+# PAGE 3: ABOUT PAGE
+# =========================================================
+elif nav_choice == "ℹ️ About":
+    st.markdown("### ℹ️ About the Model & Technology")
+    
+    st.markdown(
+        """
+        #### 🤖 Model Architecture: ResNet-50
+        This system leverages **ResNet-50**, a residual deep learning neural network architecture with 50 layers. 
+        Residual connections resolve the vanishing gradient problem, enabling the network to learn rich feature representations.
+
+        #### 📚 Dataset & Categorization Mapping
+        - Pre-trained on **ImageNet-1k** (containing over 1 million images across 1,000 classes).
+        - Includes extensive sub-categories ranging from specific dog breeds (*Golden Retriever, Pembroke Welsh Corgi, Siberian Husky*) to feline variants (*Siamese, Persian, Tabby*).
+        - Logic filters aggregate specific breed detection tokens into clean, easy-to-read **Cat**, **Dog**, or **Other** umbrella designations.
+
+        #### 💻 Tech Stack
+        * **Framework:** PyTorch & Torchvision
+        * **Frontend:** Streamlit Custom UI
+        * **Image Preprocessing:** PIL (Python Imaging Library)
+        """
     )
 
-    if file is not None:
-        st.session_state.uploaded_file = file
-        
-        image = Image.open(file).convert("RGB")
-        st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
-        
-        st.write("")
-        st.button("🚀 Analyze Image & View Results", on_click=go_to_results)
-
-
-# =========================================================
-# PAGE 2: RESULTS PAGE
-# =========================================================
-elif st.session_state.page == 'results':
-    st.markdown("<h1 class='main-title'>🐾 Analysis Report 🐾</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-text'>Here are the classification findings from our AI model!</p>", unsafe_allow_html=True)
-    
-    st.divider()
-
-    if st.session_state.uploaded_file is not None:
-        image = Image.open(st.session_state.uploaded_file).convert("RGB")
-        
-        col1, col2 = st.columns([1, 1], gap="large")
-
-        with col1:
-            st.markdown("#### 🖼️ Image Preview")
-            st.image(image, use_container_width=True)
-
-        with col2:
-            with st.spinner("🧠 Scanning visual patterns... 🔍"):
-                pred_class, score, raw_label, top3_list = classify_image(image)
-
-            # Hero Result Card
-            if pred_class == "Cat":
-                st.markdown(
-                    """
-                    <div class="result-card result-cat">
-                        <p class="card-title">🐱 Specified Pet Type: CAT</p>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
-            elif pred_class == "Dog":
-                st.markdown(
-                    """
-                    <div class="result-card result-dog">
-                        <p class="card-title">🐶 Specified Pet Type: DOG</p>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
-            else:
-                st.markdown(
-                    f"""
-                    <div class="result-card result-other">
-                        <p class="card-title">❓ Specified Pet Type: OTHER</p>
-                        <p style="margin: 5px 0 0 0; font-size: 1.05rem; opacity: 0.9;">(Detected: {raw_label.title()})</p>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
-
-            # AI Certainty Metric & Bar
-            st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
-            st.progress(min(int(score), 100))
-
-            # Top 3 Matches
-            st.markdown("---")
-            st.markdown("##### 📈 Top Feature Matches:")
-            for feat_name, feat_score in top3_list:
-                st.write(f"**{feat_name}**: `{feat_score:.1f}%`")
-                st.progress(min(int(feat_score), 100))
-
-            st.markdown("---")
-            with st.expander("🔬 View Technical Details"):
-                st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
-                st.write(f"🏷️ **Mapped Grouping:** `{pred_class}`")
-
-        st.divider()
-        st.button("🔄 Upload Another Image", on_click=go_to_upload)
-    else:
-        st.warning("No image found!")
-        st.button("⬅️ Back to Upload Page", on_click=go_to_upload)
+# Footer Disclaimer
+st.markdown("---")
+st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality, lighting, and frame composition.")
