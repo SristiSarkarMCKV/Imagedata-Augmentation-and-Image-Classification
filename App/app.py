@@ -3,6 +3,8 @@ import torch
 from PIL import Image
 from torchvision import models
 import streamlit.components.v1 as components
+import requests
+from io import BytesIO
 
 # ---------------------------------------------------------
 # Page Setup & Configuration
@@ -236,7 +238,6 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    # Dynamic responsive height calculation baseline (safely accommodates mobile wrapping bounds and auto-scales)
     components.html(html_code, height=360, scrolling=False)
 
 
@@ -335,7 +336,6 @@ if nav_choice == "🏠 Home":
         unsafe_allow_html=True
     )
     
-    # Wrapped with .content-section to force an identical and constant gap across mobile/desktop
     st.markdown('<div class="content-section">', unsafe_allow_html=True)
     st.markdown("### ⚙️ Classification System Architecture & Workflow")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -377,7 +377,7 @@ elif nav_choice == "🔮 Prediction":
     if st.session_state.page == 'upload':
         st.markdown(
             "<p class='sub-text'>"
-            "Upload any pet image below to analyze it. "
+            "Upload any pet image or select a sample image below to analyze it. "
             "The model will classify whether it is a <span class='highlight-text'>🐱 Cat</span> "
             "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>"
             "</p>", 
@@ -397,6 +397,34 @@ elif nav_choice == "🔮 Prediction":
             st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
             def go_to_results(): st.session_state.page = 'results'
             st.button("🚀 Analyze Image & View Results", on_click=go_to_results)
+
+        st.markdown('<div class="content-section">', unsafe_allow_html=True)
+        st.markdown("### ✨ Or Choose a Sample Preset Image")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        sample_images = {
+            "🐱 Sample Cat (Tabby)": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&auto=format&fit=crop&q=80",
+            "🐶 Sample Dog (Golden Retriever)": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&auto=format&fit=crop&q=80",
+            "🐱 Sample Cat (Siamese)": "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400&auto=format&fit=crop&q=80",
+            "🐶 Sample Dog (German Shepherd)": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&auto=format&fit=crop&q=80"
+        }
+
+        s_col1, s_col2 = st.columns(2)
+        idx = 0
+        for label_name, img_url in sample_images.items():
+            target_col = s_col1 if idx % 2 == 0 else s_col2
+            with target_col:
+                st.image(img_url, caption=label_name, use_container_width=True)
+                if st.button(f"Select {label_name.split()[1]} {label_name.split()[2]}", key=f"sample_btn_{idx}"):
+                    try:
+                        response = requests.get(img_url)
+                        sample_img_file = BytesIO(response.content)
+                        st.session_state.uploaded_file = sample_img_file
+                        st.session_state.page = 'results'
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Could not load sample image: {e}")
+            idx += 1
 
     elif st.session_state.page == 'results':
         st.markdown("<h2 style='text-align: center; font-family: Outfit, sans-serif;'>📋 Analysis Report</h2>", unsafe_allow_html=True)
@@ -436,7 +464,7 @@ elif nav_choice == "🔮 Prediction":
             def go_to_upload():
                 st.session_state.page = 'upload'
                 st.session_state.uploaded_file = None
-            st.button("🔄 Upload Another Image", on_click=go_to_upload)
+            st.button("🔄 Upload / Choose Another Image", on_click=go_to_upload)
         else:
             st.warning("No image found!")
             def go_to_upload():
