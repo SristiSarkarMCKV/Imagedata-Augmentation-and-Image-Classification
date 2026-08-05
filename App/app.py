@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects Google Fonts, glassmorphism containers, custom scrollbar styling, and polished card designs."""
+    """Injects Google Fonts, frosted glass containers, vivid orange scrollbar styling, and polished card designs."""
     st.markdown(
         f"""
         <style>
@@ -27,20 +27,20 @@ def inject_custom_styles(bg_url):
             font-family: 'Poppins', sans-serif;
         }}
 
-        /* Dynamic Custom Gradient Scrollbar */
+        /* Dynamic Vibrant Orange Scrollbar */
         ::-webkit-scrollbar {{
             width: 12px;
         }}
         ::-webkit-scrollbar-track {{
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
         }}
         ::-webkit-scrollbar-thumb {{
-            background: linear-gradient(180deg, #FF6B6B, #FF8E53, #4ECDC4);
+            background: linear-gradient(180deg, #FF781F, #FF9800, #F57C00);
             border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.25);
         }}
         ::-webkit-scrollbar-thumb:hover {{
-            background: linear-gradient(180deg, #FF5252, #FF7043, #26A69A);
+            background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800);
         }}
 
         /* Full page Background */
@@ -116,7 +116,7 @@ def inject_custom_styles(bg_url):
         }}
 
         .card-title {{
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             margin: 0;
             letter-spacing: 0.5px;
         }}
@@ -185,7 +185,7 @@ def load_classifier():
 
 model, transform, categories = load_classifier()
 
-def classify_image(image, confidence_threshold=0.05):
+def classify_image(image):
     input_tensor = transform(image).unsqueeze(0)
     
     with torch.no_grad():
@@ -197,13 +197,14 @@ def classify_image(image, confidence_threshold=0.05):
     top1_score = top5_prob[0].item() * 100
     top1_label = categories[top5_catid[0].item()].lower()
 
+    # Precise feline keywords
     cat_keywords = [
-        'cat', 'tabby', 'persian', 'siamese', 'egyptian', 'cougar', 'lynx', 
-        'leopard', 'panther', 'cheetah', 'jaguar', 'lion', 'angora', 'felis', 
-        'kitten', 'tomcat', 'alley cat', 'marmalade', 'tortoiseshell', 'calico', 
-        'manx', 'burmese'
+        'cat', 'tabby', 'persian cat', 'siamese cat', 'siamese', 'egyptian cat', 
+        'cougar', 'lynx', 'leopard', 'panther', 'cheetah', 'jaguar', 'felis', 
+        'kitten', 'marmalade cat', 'tortoiseshell', 'calico', 'manx', 'burmese'
     ]
     
+    # Precise canine keywords
     dog_keywords = [
         'dog', 'retriever', 'terrier', 'spaniel', 'poodle', 'hound', 'bulldog', 
         'shepherd', 'husky', 'collie', 'pug', 'chihuahua', 'beagle', 'mutt', 
@@ -212,12 +213,7 @@ def classify_image(image, confidence_threshold=0.05):
         'dingo', 'wolfhound', 'elkhound', 'groenendael', 'papillon', 'whippet', 'puppy'
     ]
 
-    top5_labels = [categories[idx.item()].lower() for idx in top5_catid]
-    
-    is_cat = any(any(kw in label for kw in cat_keywords) for label in top5_labels[:3])
-    is_dog = any(any(kw in label for kw in dog_keywords) for label in top5_labels[:3])
-
-    # Top-3 probability list for UI
+    # Top-3 probability breakdown
     top3_details = []
     for idx in range(3):
         top3_details.append((
@@ -225,13 +221,25 @@ def classify_image(image, confidence_threshold=0.05):
             top5_prob[idx].item() * 100
         ))
 
-    # Species check hierarchy
-    if is_cat:
+    # Primary check on top prediction
+    is_top1_cat = any(kw in top1_label for kw in cat_keywords)
+    is_top1_dog = any(kw in top1_label for kw in dog_keywords)
+
+    if is_top1_cat:
         return "Cat", top1_score, top1_label, top3_details
-    elif is_dog:
+    elif is_top1_dog:
         return "Dog", top1_score, top1_label, top3_details
-    elif top1_score < (confidence_threshold * 100):
-        return "Other", top1_score, top1_label, top3_details
+
+    # Secondary check across top-3 candidates for cat/dog variations
+    top3_labels = [categories[idx.item()].lower() for idx in top5_catid[:3]]
+    is_cat_fallback = any(any(kw in lbl for kw in cat_keywords) for lbl in top3_labels)
+    is_dog_fallback = any(any(kw in lbl for kw in dog_keywords) for lbl in top3_labels)
+
+    # Only map to Cat/Dog if it is strongly indicated; otherwise strictly assign to "Other"
+    if is_cat_fallback and not is_top1_dog:
+        return "Cat", top1_score, top1_label, top3_details
+    elif is_dog_fallback and not is_top1_cat:
+        return "Dog", top1_score, top1_label, top3_details
     else:
         return "Other", top1_score, top1_label, top3_details
 
@@ -327,9 +335,10 @@ elif st.session_state.page == 'results':
                 )
             else:
                 st.markdown(
-                    """
+                    f"""
                     <div class="result-card result-other">
-                        <p class="card-title">❓ Specified Pet Type: OTHER / UNKNOWN</p>
+                        <p class="card-title">❓ Specified Pet Type: OTHER</p>
+                        <p style="margin: 5px 0 0 0; font-size: 1.05rem; opacity: 0.9;">(Detected: {raw_label.title()})</p>
                     </div>
                     """, 
                     unsafe_allow_html=True
