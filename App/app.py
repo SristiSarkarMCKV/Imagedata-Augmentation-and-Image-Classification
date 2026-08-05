@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects CSS styling to fix contrast issues and lock design layout."""
+    """Injects CSS styling to ensure fluid responsive layout without extra gaps."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -34,21 +34,27 @@ def inject_custom_styles(bg_url):
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
         ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
         
-        "/* Main Adaptive Glassmorphism Container */\n"
+        "/* Main Adaptive Glassmorphism Container & Responsive Gap Tightening */\n"
         ".block-container {\n"
         "  background: rgba(255, 255, 255, 0.95);\n"
         "  color: #1A202C;\n"
         "  border-radius: 28px;\n"
-        "  padding: 35px 30px !important;\n"
-        "  margin-top: 25px;\n"
-        "  margin-bottom: 25px;\n"
+        "  padding: 30px 25px !important;\n"
+        "  margin-top: 15px;\n"
+        "  margin-bottom: 15px;\n"
         "  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);\n"
         "  backdrop-filter: blur(14px);\n"
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
         "}\n"
 
+        "/* TIGHTEN VERTICAL MARGINS ACROSS ALL SCREEN SIZES */\n"
+        "div.element-container { margin-bottom: 0.5rem !important; }\n"
+        "h3 { margin-top: 0.8rem !important; margin-bottom: 0.4rem !important; }\n"
+        "h4 { margin-top: 0.8rem !important; margin-bottom: 0.4rem !important; }\n"
+        "p { margin-bottom: 0.5rem !important; }\n"
+
         "/* FIX CONTRAST FOR ALL CALLOUT BOXES (info, success, warning) */\n"
-        "div[data-testid='stAlert'] { color: #1A202C !important; font-weight: 500; border-radius: 14px; }\n"
+        "div[data-testid='stAlert'] { color: #1A202C !important; font-weight: 500; border-radius: 14px; margin-bottom: 0.5rem !important; }\n"
         "div[data-testid='stAlert'] p { color: #1A202C !important; font-weight: 500; }\n"
         "div[data-testid='stAlert'] strong { color: #000000 !important; font-weight: 800; }\n"
         
@@ -71,37 +77,37 @@ def inject_custom_styles(bg_url):
         "  div[data-testid='stAlert'] strong { color: #FFFFFF !important; }\n"
         "}\n"
 
-        ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 5px; letter-spacing: -0.5px; }\n"
-        ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 1rem; color: #4A5568; font-weight: 500; line-height: 1.6; margin-bottom: 20px; }\n"
+        ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 0px; letter-spacing: -0.5px; }\n"
+        ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 0.95rem; color: #4A5568; font-weight: 500; line-height: 1.4; margin-bottom: 10px; }\n"
         ".highlight-text { color: #FF6B6B; font-weight: 700; }\n"
         
-        "div[data-testid='stRadio'] > div { justify-content: center; gap: 12px; border: none !important; }\n"
-        "div[data-testid='stRadio'] label { background: rgba(240, 244, 248, 0.85); border: 1px solid #CBD5E0; border-radius: 12px; padding: 6px 16px; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all 0.2s ease-in-out; color: #2D3748; }\n"
+        "div[data-testid='stRadio'] > div { justify-content: center; gap: 10px; border: none !important; margin-bottom: 5px; }\n"
+        "div[data-testid='stRadio'] label { background: rgba(240, 244, 248, 0.85); border: 1px solid #CBD5E0; border-radius: 12px; padding: 4px 14px; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all 0.2s ease-in-out; color: #2D3748; }\n"
         "div[data-testid='stRadio'] label:hover { border-color: #FF6B6B; background: #FFFFFF; }\n"
         
-        ".feature-card { background: #F8FAFC; border-radius: 14px; padding: 16px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }\n"
-        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.05rem; margin-bottom: 6px; }\n"
-        ".feature-card-desc { color: #4A5568; font-size: 0.88rem; line-height: 1.5; }\n"
+        ".feature-card { background: #F8FAFC; border-radius: 12px; padding: 12px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }\n"
+        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1rem; margin-bottom: 4px; }\n"
+        ".feature-card-desc { color: #4A5568; font-size: 0.85rem; line-height: 1.4; }\n"
         
-        ".diagram-container { background: #FFFFFF; padding: 12px; border-radius: 16px; border: 1px solid #E2E8F0; margin-top: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
+        ".diagram-container { background: #FFFFFF; padding: 8px; border-radius: 14px; border: 1px solid #E2E8F0; margin-top: 5px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         
-        ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
+        ".result-card { border-radius: 18px; padding: 18px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
         ".result-card p { color: white !important; }\n"
         ".result-cat { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }\n"
         ".result-dog { background: linear-gradient(135deg, #4299E1, #3182CE); }\n"
         ".result-other { background: linear-gradient(135deg, #ED8936, #ECC94B); }\n"
-        ".card-title { font-size: 1.5rem; margin: 0; letter-spacing: 0.5px; color: #FFFFFF !important; }\n"
+        ".card-title { font-size: 1.35rem; margin: 0; letter-spacing: 0.5px; color: #FFFFFF !important; }\n"
         
-        "div[data-testid='stFileUploader'] { border: 3px dashed #4ECDC4; border-radius: 20px; background: rgba(247, 250, 252, 0.4); padding: 15px; transition: all 0.3s ease; }\n"
+        "div[data-testid='stFileUploader'] { border: 2px dashed #4ECDC4; border-radius: 16px; background: rgba(247, 250, 252, 0.4); padding: 10px; transition: all 0.3s ease; }\n"
         "div[data-testid='stFileUploader']:hover { border-color: #FF6B6B; transform: translateY(-2px); }\n"
         
-        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; border-radius: 16px; border: none; padding: 12px 28px; width: 100%; transition: all 0.3s ease; box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35); }\n"
+        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem; border-radius: 14px; border: none; padding: 10px 24px; width: 100%; transition: all 0.3s ease; box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35); }\n"
         ".stButton>button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5); }\n"
         
-        "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 2rem !important; color: #3182CE !important; font-weight: 800; }\n"
-        "hr { margin: 15px 0 !important; border-color: #E2E8F0 !important; }\n"
+        "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 1.8rem !important; color: #3182CE !important; font-weight: 800; }\n"
+        "hr { margin: 10px 0 !important; border-color: #E2E8F0 !important; }\n"
         "ul { list-style-type: none !important; padding-left: 0 !important; }\n"
-        "li { padding: 4px 0; }\n"
+        "li { padding: 2px 0; }\n"
         "</style>"
     )
     st.markdown(css, unsafe_allow_html=True)
@@ -139,20 +145,20 @@ def render_css_flowchart():
           }
         }
 
-        .flow-wrapper { display: flex; flex-direction: column; gap: 12px; width: 100%; min-width: 300px; }
-        .flow-section { background: var(--bg-section); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; }
-        .section-title { font-size: 0.85rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .stage-box { display: flex; gap: 12px; align-items: center; }
-        .stage-img { width: 75px; height: 75px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
+        .flow-wrapper { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 300px; }
+        .flow-section { background: var(--bg-section); border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 10px; }
+        .section-title { font-size: 0.8rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .stage-box { display: flex; gap: 10px; align-items: center; }
+        .stage-img { width: 65px; height: 65px; border-radius: 8px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
         .step-grid { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
-        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 95px; text-align: center; }
+        .node { padding: 6px 8px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 85px; text-align: center; }
         .node-gray { background: var(--node-gray-bg); border: 1.5px solid var(--node-gray-border); color: var(--node-gray-text); }
         .node-blue { background: #EBF8FF; border: 1.5px solid #90CDF4; color: #2B6CB0; }
         .node-orange { background: #FFFAF0; border: 1.5px solid #FBD38D; color: #C05621; }
         .node-green { background: #F0FFF4; border: 1.5px solid #9AE6B4; color: #276749; }
-        .cat-img-box { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid #CBD5E0; margin-top: 4px; }
-        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.85rem; }
-        .down-arrow { text-align: center; font-size: 1rem; color: var(--arrow-color); margin: -6px 0; }
+        .cat-img-box { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid #CBD5E0; margin-top: 2px; }
+        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.8rem; }
+        .down-arrow { text-align: center; font-size: 0.9rem; color: var(--arrow-color); margin: -4px 0; }
       </style>
     </head>
     <body>
@@ -203,7 +209,7 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    components.html(html_code, height=650, scrolling=False)
+    components.html(html_code, height=520, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -292,7 +298,7 @@ nav_choice = st.radio(
 if nav_choice == "🏠 Home":
     st.markdown("### 🧬 Automated Deep Learning Pet Recognition Engine")
     st.markdown(
-        "<p style='font-size: 0.98rem; line-height: 1.6;'>"
+        "<p style='font-size: 0.95rem; line-height: 1.5;'>"
         "Welcome! This application utilizes state-of-the-art Deep Computer Vision to instantly analyze "
         "and classify uploaded images. Built on top of a 50-layer Deep Residual Neural Network "
         "(ResNet50) the system evaluates visual feature representations across 1,000 object categories "
@@ -310,7 +316,6 @@ if nav_choice == "🏠 Home":
     with col_c:
         st.markdown('<div class="feature-card" style="border-left-color: #4299E1;"><div class="feature-card-title">3. Logic & Classification</div><div class="feature-card-desc">Softmax output logits map top predictions into species groupings calculating confidence metrics.</div></div>', unsafe_allow_html=True)
 
-    st.write("")
     st.markdown("#### 📊 Visual Workflow Diagram")
     st.markdown('<div class="diagram-container">', unsafe_allow_html=True)
     render_css_flowchart()
@@ -325,7 +330,6 @@ if nav_choice == "🏠 Home":
     with col3:
         st.warning("**🛡️ Smart Grouping**\n\nFallback categorization logic ensuring precise non-pet filters.")
 
-    st.write("")
     st.button("🚀 Launch Image Classifier Engine", on_click=switch_to_prediction)
 
 
@@ -354,7 +358,6 @@ elif nav_choice == "🔮 Prediction":
             st.session_state.uploaded_file = file
             image = Image.open(file).convert("RGB")
             st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
-            st.write("")
             def go_to_results(): st.session_state.page = 'results'
             st.button("🚀 Analyze Image & View Results", on_click=go_to_results)
 
@@ -379,7 +382,7 @@ elif nav_choice == "🔮 Prediction":
                 elif pred_class == "Dog":
                     st.markdown('<div class="result-card result-dog"><p class="card-title">🐶 Specified Pet Type: DOG</p></div>', unsafe_allow_html=True)
                 else:
-                    st.markdown(f'<div class="result-card result-other"><p class="card-title">❓ Specified Pet Type: OTHER</p><p style="margin: 5px 0 0 0; font-size: 1.05rem; opacity: 0.9;">(Detected: {raw_label.title()})</p></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="result-card result-other"><p class="card-title">❓ Specified Pet Type: OTHER</p><p style="margin: 3px 0 0 0; font-size: 1rem; opacity: 0.9;">(Detected: {raw_label.title()})</p></div>', unsafe_allow_html=True)
 
                 st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
                 st.progress(min(int(score), 100))
@@ -393,7 +396,6 @@ elif nav_choice == "🔮 Prediction":
                     st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
                     st.write(f"🏷️ **Mapped Grouping:** `{pred_class}`")
 
-            st.write("")
             def go_to_upload():
                 st.session_state.page = 'upload'
                 st.session_state.uploaded_file = None
