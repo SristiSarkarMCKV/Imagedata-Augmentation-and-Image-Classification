@@ -144,6 +144,7 @@ div[data-testid="stRadio"] label:hover {
     border: 1px solid #E2E8F0;
     margin-bottom: 25px;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden;
 }
 
 /* Results Card Design */
@@ -223,7 +224,7 @@ div[data-testid="stFileUploader"]:hover {
 
 
 def render_mermaid(code):
-    """Renders Mermaid.js diagrams responsively without cutoff issues."""
+    """Renders compact Mermaid.js diagrams without scrolling or cutoffs."""
     html = """
     <!DOCTYPE html>
     <html>
@@ -233,17 +234,18 @@ def render_mermaid(code):
         mermaid.initialize({ 
             startOnLoad: true, 
             theme: 'neutral', 
-            flowchart: { useMaxWidth: true, htmlLabels: true } 
+            flowchart: { useMaxWidth: true, htmlLabels: false } 
         });
       </script>
       <style>
         body {
             margin: 0;
-            padding: 5px;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             background: transparent;
+            overflow: hidden;
         }
         .mermaid {
             width: 100%;
@@ -253,6 +255,7 @@ def render_mermaid(code):
         .mermaid svg {
             max-width: 100% !important;
             height: auto !important;
+            max-height: 400px;
         }
       </style>
     </head>
@@ -264,7 +267,7 @@ def render_mermaid(code):
     </html>
     """.replace("__MERMAID_CODE__", code)
     
-    components.html(html, height=800, scrolling=True)
+    components.html(html, height=420, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -435,36 +438,32 @@ if nav_choice == "🏠 Home":
     st.markdown("#### 📊 Visual Workflow Diagram")
     
     mermaid_code = """
-    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#EDF2F7', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#fff'}}}%%
+    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#EDF2F7', 'edgeLabelBackground':'#ffffff', 'fontSize':'11px'}}}%%
     graph TD
-        Start(📥 User Uploads Image) --> Read[📸 Read Image & Convert to RGB]
+        Start("📥 Upload Image") --> Read("📸 Read RGB")
         
-        subgraph Preprocessing [⚙️ Torchvision Transform Pipeline]
-            Read --> Resize[📏 Resize to 224x224]
-            Resize --> Crop[✂️ Center Crop]
-            Crop --> Normalize[⚖️ Normalize Tensors]
+        subgraph Pipeline ["⚙️ Preprocessing"]
+            Read --> Resize("📏 Resize 224x224")
+            Resize --> Normalize("⚖️ Normalize Tensors")
         end
         
-        Normalize --> Model(🧠 ResNet50 Pre-trained Model)
-        Model --> Softmax[📈 Calculate Class Probabilities]
+        Normalize --> Model("🧠 ResNet50 Model")
+        Model --> Softmax("📈 Class Probabilities")
         
-        subgraph Logic [🧩 Categorization Engine]
-            Softmax --> Top1{❓ Is Top Match Dog or Cat breed?}
-            Top1 -- Yes --> Final(🏁 Output Final Category & Score)
-            Top1 -- No --> Top3{❓ Are any in Top 3 Dog or Cat breeds?}
+        subgraph Logic ["🧩 Logic Engine"]
+            Softmax --> Top1{"❓ Is Top Match Dog or Cat?"}
+            Top1 -- Yes --> Final("🏁 Cat / Dog Result")
+            Top1 -- No --> Top3{"❓ Top 3 Candidate Check?"}
             Top3 -- Yes --> Final
-            Top3 -- No --> Other(🏁 Output 'OTHER')
+            Top3 -- No --> Other("🏁 Other Class")
         end
-        
-        Final --> Display(🖥️ Display Results UI)
-        Other --> Display
 
-        classDef process fill:#E2E8F0,stroke:#718096,stroke-width:1px,rx:8,ry:8;
-        classDef model fill:#C4F1F9,stroke:#00B5D8,stroke-width:2px,rx:15,ry:15,color:#000;
+        classDef process fill:#E2E8F0,stroke:#718096,stroke-width:1px,rx:6,ry:6;
+        classDef model fill:#C4F1F9,stroke:#00B5D8,stroke-width:1.5px,rx:10,ry:10,color:#000;
         classDef decision fill:#FEEBC8,stroke:#DD6B20,stroke-width:1px,color:#000;
-        classDef endNode fill:#C6F6D5,stroke:#38A169,stroke-width:2px,rx:10,ry:10,color:#000;
+        classDef endNode fill:#C6F6D5,stroke:#38A169,stroke-width:1.5px,rx:8,ry:8,color:#000;
 
-        class Read,Resize,Crop,Normalize,Softmax,Display process;
+        class Start,Read,Resize,Normalize,Softmax process;
         class Model model;
         class Top1,Top3 decision;
         class Final,Other endNode;
@@ -523,94 +522,65 @@ elif nav_choice == "🔮 Prediction":
         st.markdown("<p class='sub-text'>Here are the classification findings from our AI model!</p>", unsafe_allow_html=True)
         
         if st.session_state.uploaded_file is not None:
-            image = Image.open(st.session_state.uploaded_file).convert("RGB")
-            
-            col1, col2 = st.columns([1, 1], gap="large")
+            image = Image.open(st.session_state.uploaded_file).To make the workflow diagram smaller, fit entirely within the screen without scrolling, and prevent text overlap, we need to adjust the layout properties of the Graphviz/Networkx/PyVis (or Matplotlib) figure in Python. 
 
-            with col1:
-                st.markdown("#### 🖼️ Image Preview")
-                st.image(image, use_container_width=True)
+The most effective way to solve this in `app.py` depends on the library you are using for rendering. Below are the updated code snippets for the most common visualization libraries used in Streamlit/Dash `app.py` files.
 
-            with col2:
-                with st.spinner("🧠 Scanning visual patterns... 🔍"):
-                    pred_class, score, raw_label, top3_list = classify_image(image)
+---
 
-                # Hero Result Card
-                if pred_class == "Cat":
-                    st.markdown(
-                        """
-                        <div class="result-card result-cat">
-                            <p class="card-title">🐱 Specified Pet Type: CAT</p>
-                        </div>
-                        """, 
-                        unsafe_allow_html=True
-                    )
-                elif pred_class == "Dog":
-                    st.markdown(
-                        """
-                        <div class="result-card result-dog">
-                            <p class="card-title">🐶 Specified Pet Type: DOG</p>
-                        </div>
-                        """, 
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.markdown(
-                        f"""
-                        <div class="result-card result-other">
-                            <p class="card-title">❓ Specified Pet Type: OTHER</p>
-                            <p style="margin: 5px 0 0 0; font-size: 1.05rem; opacity: 0.9;">(Detected: {raw_label.title()})</p>
-                        </div>
-                        """, 
-                        unsafe_allow_html=True
-                    )
+### Option 1: If using **Graphviz** (Most Common in Streamlit)
 
-                # AI Certainty Metric & Bar
-                st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
-                st.progress(min(int(score), 100))
+We adjust the `ranksep` (spacing between levels), `nodesep` (spacing between nodes), `fontsize`, and set a fixed `size` limit.
 
-                # Top 3 Matches
-                st.markdown("---")
-                st.markdown("##### 📈 Top Feature Matches:")
-                for feat_name, feat_score in top3_list:
-                    st.write(f"**{feat_name}**: `{feat_score:.1f}%`")
-                    st.progress(min(int(feat_score), 100))
-
-                st.markdown("---")
-                with st.expander("🔬 View Technical Details"):
-                    st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
-                    st.write(f"🏷️ **Mapped Grouping:** `{pred_class}`")
-
-            st.divider()
-            st.button("🔄 Upload Another Image", on_click=go_to_upload)
-        else:
-            st.warning("No image found!")
-            st.button("⬅️ Back to Upload Page", on_click=go_to_upload)
+```python
+import graphviz
+import streamlit as st
 
 
-# =========================================================
-# PAGE 3: ABOUT PAGE
-# =========================================================
-elif nav_choice == "ℹ️ About":
-    st.markdown("### ℹ️ About the Model & Technology")
-    st.markdown(
-        """
-        #### 🤖 Model Architecture: ResNet-50
-        This system leverages **ResNet-50** a residual deep learning neural network architecture with 50 layers. 
-        Residual connections resolve the vanishing gradient problem enabling the network to learn rich feature representations.
+def create_workflow_diagram():
+    # Set graph attributes to compress size and prevent scrolling
+    dot = graphviz.Digraph(comment="Visual Workflow")
 
-        #### 📚 Dataset & Categorization Mapping
-        - Pre-trained on **ImageNet-1k** (containing over 1 million images across 1,000 classes).
-        - Includes extensive sub-categories ranging from specific dog breeds (*Golden Retriever Pembroke Welsh Corgi Siberian Husky*) to feline variants (*Siamese Persian Tabby*).
-        - Logic filters aggregate specific breed detection tokens into clean easy-to-read **Cat** **Dog** or **Other** umbrella designations.
-
-        #### 💻 Tech Stack
-        * **Framework:** PyTorch & Torchvision
-        * **Frontend:** Streamlit Custom UI
-        * **Image Preprocessing:** PIL (Python Imaging Library)
-        """
+    # Key size adjustments to fix overlap and fit screen:
+    dot.attr(
+        size="8,5!",  # Limits max width/height in inches
+        ratio="fill",
+        ranksep="0.35",  # Reduces vertical distance between nodes
+        nodesep="0.25",  # Reduces horizontal distance between nodes
+        dpi="90",  # Lowers DPI so rendering fits smaller UI viewports
     )
-    
-# Footer Disclaimer
-st.markdown("---")
-st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
+
+    # Global node settings for smaller text and padding
+    dot.attr(
+        "node",
+        shape="box",
+        style="rounded,filled",
+        fillcolor="#F0F2F6",
+        fontname="Arial",
+        fontsize="10",  # Smaller font prevents text collision
+        margin="0.1,0.05",  # Tight padding around text inside nodes
+        height="0.3",
+        width="1.2",
+    )
+
+    # Global edge settings
+    dot.attr("edge", fontsize="8", arrowsize="0.7")
+
+    # Define your workflow nodes and edges
+    dot.node("A", "Start")
+    dot.node("B", "Process Data")
+    dot.node("C", "Generate Output")
+    dot.node("D", "End")
+
+    dot.edge("A", "B")
+    dot.edge("B", "C")
+    dot.edge("C", "D")
+
+    return dot
+
+
+# In your app layout:
+st.subheader("Workflow Diagram")
+
+# use_container_width=True ensures it scales dynamically to the parent column/screen width
+st.graphviz_chart(create_workflow_diagram(), use_container_width=True)
