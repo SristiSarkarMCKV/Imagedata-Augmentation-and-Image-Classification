@@ -17,18 +17,24 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects theme-adaptive CSS styling for maximum contrast in both Light and Dark modes."""
+    """Injects custom styling and removes Streamlit anchor icons and empty boxes."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
         "html, body, [class*='css'] { font-family: 'Poppins', sans-serif; }\n"
+        
+        "/* HIDE STREAMLIT LINK/ANCHOR ICONS NEXT TO HEADINGS */\n"
+        "[data-testid='stHeaderActionElements'], .stHeadingAnchor, a.data-testid-stHeaderActionElements, .css-1544g2n { display: none !important; visibility: hidden !important; }\n"
+        "h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { display: none !important; opacity: 0 !important; }\n"
+        "a[href*='#'] { display: none !important; }\n"
+
         "::-webkit-scrollbar { width: 12px; }\n"
         "::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.7); }\n"
         "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #FF781F, #FF9800, #F57C00); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.25); }\n"
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
         ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
         
-        "/* Adaptive Glassmorphism Container */\n"
+        "/* Main Adaptive Glassmorphism Container */\n"
         ".block-container {\n"
         "  background: rgba(255, 255, 255, 0.95);\n"
         "  color: #1A202C;\n"
@@ -41,7 +47,7 @@ def inject_custom_styles(bg_url):
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
         "}\n"
         
-        "/* Dark Mode Overrides for Main Container */\n"
+        "/* Dark Mode Overrides */\n"
         "@media (prefers-color-scheme: dark) {\n"
         "  .block-container {\n"
         "    background: rgba(15, 23, 42, 0.92) !important;\n"
@@ -94,16 +100,15 @@ def inject_custom_styles(bg_url):
 
 
 def render_css_flowchart():
-    """Renders theme-adaptive visual workflow diagram with demo stage illustrations."""
+    """Renders theme-adaptive visual workflow diagram with requested stage images and category animal images."""
     html_code = """
     <!DOCTYPE html>
     <html>
     <head>
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 2px; }
+        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 2px; overflow-x: auto; }
         
-        /* Light Theme Defaults */
         :root {
           --bg-section: #F8FAFC;
           --border-color: #E2E8F0;
@@ -114,7 +119,6 @@ def render_css_flowchart():
           --arrow-color: #CBD5E0;
         }
 
-        /* Dark Theme Media Rule for iframe internal elements */
         @media (prefers-color-scheme: dark) {
           :root {
             --bg-section: #1E293B;
@@ -127,33 +131,37 @@ def render_css_flowchart():
           }
         }
 
-        .flow-wrapper { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .flow-wrapper { display: flex; flex-direction: column; gap: 12px; width: 100%; min-width: 300px; }
         .flow-section { background: var(--bg-section); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; }
         .section-title { font-size: 0.85rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
         .stage-box { display: flex; gap: 12px; align-items: center; }
-        .stage-img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
+        
+        .stage-img { width: 75px; height: 75px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
+        
         .step-grid { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
-        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 110px; justify-content: center; text-align: center; }
+        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 95px; text-align: center; }
         
         .node-gray { background: var(--node-gray-bg); border: 1.5px solid var(--node-gray-border); color: var(--node-gray-text); }
         .node-blue { background: #EBF8FF; border: 1.5px solid #90CDF4; color: #2B6CB0; }
         .node-orange { background: #FFFAF0; border: 1.5px solid #FBD38D; color: #C05621; }
         .node-green { background: #F0FFF4; border: 1.5px solid #9AE6B4; color: #276749; }
         
+        .cat-img-box { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid #CBD5E0; margin-top: 4px; }
+        
         .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.85rem; }
-        .down-arrow { text-align: center; font-size: 1rem; color: var(--arrow-color); margin: -4px 0; }
+        .down-arrow { text-align: center; font-size: 1rem; color: var(--arrow-color); margin: -6px 0; }
       </style>
     </head>
     <body>
       <div class="flow-wrapper">
         
-        <!-- STEP 1 -->
+        <!-- STAGE 1: GALLERY OF IMAGES -->
         <div class="flow-section">
           <div class="section-title">1️⃣ Input & Image Preprocessing</div>
           <div class="stage-box">
-            <img class="stage-img" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150&auto=format&fit=crop&q=80" alt="Pet Image Demo"/>
+            <img class="stage-img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&auto=format&fit=crop&q=80" alt="Gallery of Images"/>
             <div class="step-grid">
-              <div class="node node-gray">📥 Raw Image</div>
+              <div class="node node-gray">📥 Gallery Input</div>
               <div class="arrow">➔</div>
               <div class="node node-gray">📸 RGB Parsing</div>
               <div class="arrow">➔</div>
@@ -166,11 +174,11 @@ def render_css_flowchart():
 
         <div class="down-arrow">⬇️</div>
 
-        <!-- STEP 2 -->
+        <!-- STAGE 2: RESIZING & DEEP NETWORK -->
         <div class="flow-section">
           <div class="section-title">2️⃣ Deep Neural Network (ResNet-50)</div>
           <div class="stage-box">
-            <img class="stage-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80" alt="Deep Learning Demo"/>
+            <img class="stage-img" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&auto=format&fit=crop&q=80" alt="Resizing and Neural Net"/>
             <div class="step-grid">
               <div class="node node-blue">🧠 Feature Extraction</div>
               <div class="arrow">➔</div>
@@ -183,17 +191,32 @@ def render_css_flowchart():
 
         <div class="down-arrow">⬇️</div>
 
-        <!-- STEP 3 -->
+        <!-- STAGE 3: CATEGORIZATION WITH ANIMAL IMAGES BELOW NODES -->
         <div class="flow-section">
           <div class="section-title">3️⃣ Categorization & Prediction Output</div>
           <div class="stage-box">
-            <img class="stage-img" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80" alt="Output Classification Demo"/>
-            <div class="step-grid">
+            <div class="step-grid" style="width: 100%;">
               <div class="node node-orange">❓ Label Mapping</div>
               <div class="arrow">➔</div>
-              <div class="node node-green">🐱 Cat Class</div>
-              <div class="node node-green">🐶 Dog Class</div>
-              <div class="node node-green">❓ Other Class</div>
+              
+              <!-- Cat Node + Image Below -->
+              <div class="node node-green">
+                <span>🐱 Cat Class</span>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=100&auto=format&fit=crop&q=80" alt="Cat Category"/>
+              </div>
+
+              <!-- Dog Node + Image Below -->
+              <div class="node node-green">
+                <span>🐶 Dog Class</span>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=100&auto=format&fit=crop&q=80" alt="Dog Category"/>
+              </div>
+
+              <!-- Other Node + Image Below -->
+              <div class="node node-green">
+                <span>❓ Other Class</span>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=100&auto=format&fit=crop&q=80" alt="Other Category"/>
+              </div>
+
             </div>
           </div>
         </div>
@@ -202,7 +225,7 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    components.html(html_code, height=520, scrolling=False)
+    components.html(html_code, height=650, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -460,5 +483,4 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-    
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
