@@ -131,14 +131,14 @@ def inject_custom_styles(bg_url):
 
 
 def render_css_flowchart():
-    """Renders theme-adaptive visual workflow diagram cleanly with zero border wrappers."""
+    """Renders theme-adaptive visual workflow diagram with dynamic resize injection so height adjusts cleanly without gaps."""
     html_code = """
     <!DOCTYPE html>
     <html>
     <head>
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 0px; overflow-x: auto; }
+        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 0px; overflow: hidden; }
         
         :root {
           --bg-section: #F8FAFC;
@@ -179,7 +179,7 @@ def render_css_flowchart():
       </style>
     </head>
     <body>
-      <div class="flow-wrapper">
+      <div id="content-body" class="flow-wrapper">
         <div class="flow-section">
           <div class="section-title">1️⃣ Input & Image Preprocessing</div>
           <div class="stage-box">
@@ -223,10 +223,21 @@ def render_css_flowchart():
           </div>
         </div>
       </div>
+
+      <script>
+        function sendHeight() {
+          const bodyHeight = document.getElementById('content-body').scrollHeight + 10;
+          window.parent.postMessage({ type: 'streamlit:setFrameHeight', height: bodyHeight }, '*');
+        }
+        window.addEventListener('load', sendHeight);
+        window.addEventListener('resize', sendHeight);
+        setTimeout(sendHeight, 100);
+      </script>
     </body>
     </html>
     """
-    components.html(html_code, height=415, scrolling=False)
+    # Dynamic responsive height calculation baseline (safely accommodates mobile wrapping bounds and auto-scales)
+    components.html(html_code, height=360, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -455,6 +466,5 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-
-
+    
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
