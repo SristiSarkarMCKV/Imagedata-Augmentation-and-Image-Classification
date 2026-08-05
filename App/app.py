@@ -1,11 +1,10 @@
-import base64
 import streamlit as st
 import torch
 from PIL import Image
-from torchvision import models
+from torchvision import models, transforms
 
 # ---------------------------------------------------------
-# Page Setup & Base Configuration
+# Page Setup & Configuration
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Pet Image Classifier",
@@ -13,56 +12,79 @@ st.set_page_config(
     layout="centered"
 )
 
-# Background GIFs / Images URLs
-DEFAULT_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJvZTBkY3NmY2Y3OXBzZW43bjZsdGRzYXhiZnA0dms4ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vUc341wCXiY4U/giphy.gif" # Representative image from uploaded pet media
+# Background GIFs
+DEFAULT_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJvZTBkY3NmY2Y3OXBzZW43bjZsdGRzYXhiZnA0dms4ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vUc341wCXiY4U/giphy.gif"
 CAT_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnJ2MXhhZjh5a2R2ZnByZnRwMHFmeWpxdHZid3Rhbms4Y3gzZnB4eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JIX9t2j0ZTN9S/giphy.gif"
 DOG_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9kZDV5ZDFid3V2bnFmYmFiM3pzaHByNDR6Y2k0cnE2MThqazk0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4Zo41lhzKt6iZ8xff9/giphy.gif"
-OTHER_BG = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2F3OXFvNHZxdzMzbTVtd2Z6OXg3Z2VjNWN4ZGZidXpxd2xnb2s2byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/H5C8CevNMbpBqNqFjl/giphy.gif"
+OTHER_BG = DEFAULT_BG  # Requested general background for unknown/other
 
-def set_dynamic_background(bg_url):
-    """Injects CSS to update the full-page background dynamically."""
+
+def apply_custom_styles_and_bg(bg_url):
+    """Injects Google Fonts, Glassmorphism UI styling, and Dynamic Backgrounds."""
     st.markdown(
         f"""
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Poppins:wght@300;400;600;700&display=swap');
+
+        /* Global Page Styling */
+        html, body, [class*="css"] {{
+            font-family: 'Poppins', sans-serif;
+        }}
+
         .stApp {{
-            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("{bg_url}");
+            background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url("{bg_url}");
             background-attachment: fixed;
             background-size: cover;
             background-position: center;
         }}
-        
-        /* Container Glassmorphism Styling */
+
+        /* Central Glass Card */
         .block-container {{
-            background: rgba(255, 255, 255, 0.88);
-            border-radius: 20px;
-            padding: 30px !important;
-            margin-top: 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 24px;
+            padding: 35px !important;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
         }}
 
+        /* Typography Styling */
         .main-title {{
+            font-family: 'Outfit', sans-serif;
             text-align: center;
-            color: #1A237E;
-            font-size: 2.8rem;
+            background: linear-gradient(135deg, #0D47A1, #1976D2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
             font-weight: 800;
             margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }}
 
-        .sub-writeup {{
+        .sub-text {{
+            font-family: 'Poppins', sans-serif;
             text-align: center;
-            font-size: 1.1rem;
-            color: #333333;
+            font-size: 1.15rem;
+            color: #37474F;
+            font-weight: 400;
             line-height: 1.6;
             margin-bottom: 25px;
         }}
 
+        /* File Uploader Custom Border */
         div[data-testid="stFileUploader"] {{
-            border: 2px dashed #1A237E;
-            border-radius: 12px;
-            background-color: rgba(255, 255, 255, 0.9);
+            border: 2.5px dashed #1976D2;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+        }}
+
+        /* Metric Typography */
+        [data-testid="stMetricValue"] {{
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem !important;
+            color: #0D47A1;
         }}
         </style>
         """,
@@ -70,16 +92,16 @@ def set_dynamic_background(bg_url):
     )
 
 
-# Set initial default background
-set_dynamic_background(DEFAULT_BG)
+# Apply Default Background on Startup
+apply_custom_styles_and_bg(DEFAULT_BG)
+
 
 # ---------------------------------------------------------
-# Header & Instructions
+# Header Section
 # ---------------------------------------------------------
 st.markdown("<h1 class='main-title'>Pet Image Classifier</h1>", unsafe_allow_html=True)
-
 st.markdown(
-    "<p class='sub-writeup'>"
+    "<p class='sub-text'>"
     "Once the image is uploaded, the type of pet—whether it is a <b>Cat</b>, <b>Dog</b>, "
     "or <b>Other</b>—will be specified by the website."
     "</p>", 
@@ -90,10 +112,10 @@ st.divider()
 
 
 # ---------------------------------------------------------
-# Model Loading & Classification Logic
+# Robust Classification Engine
 # ---------------------------------------------------------
 @st.cache_resource
-def load_classifier():
+def load_model():
     weights = models.ResNet50_Weights.DEFAULT
     model = models.resnet50(weights=weights)
     model.eval()
@@ -102,9 +124,13 @@ def load_classifier():
     categories = weights.meta["categories"]
     return model, transform, categories
 
-model, transform, categories = load_classifier()
+model, transform, categories = load_model()
 
-def process_and_classify(image, confidence_threshold=0.25):
+def classify_pet_image(image, confidence_threshold=0.20):
+    """
+    Evaluates top ImageNet probabilities across exhaustive cat and dog 
+    taxonomies to ensure both species are accurately predicted.
+    """
     input_tensor = transform(image).unsqueeze(0)
     
     with torch.no_grad():
@@ -115,20 +141,24 @@ def process_and_classify(image, confidence_threshold=0.25):
     top_label = categories[top_catid.item()].lower()
     score = top_prob.item() * 100
 
+    # Exhaustive Cat Taxonomy Keywords (Covers domestic breeds & ImageNet labels)
     cat_keywords = [
         'cat', 'tabby', 'tiger cat', 'persian cat', 'siamese cat', 'siamese', 
-        'egyptian cat', 'cougar', 'lynx', 'leopard', 'panther', 'cheetah', 'jaguar', 'lion'
+        'egyptian cat', 'cougar', 'lynx', 'leopard', 'panther', 'cheetah', 
+        'jaguar', 'lion', 'angora', 'lynx', 'felis'
     ]
     
+    # Exhaustive Dog Taxonomy Keywords
     dog_keywords = [
         'dog', 'retriever', 'terrier', 'spaniel', 'poodle', 'hound', 'bulldog', 
         'shepherd', 'husky', 'collie', 'pug', 'chihuahua', 'beagle', 'mutt', 
         'pinscher', 'schnauzer', 'doberman', 'rottweiler', 'corgi', 'boxer',
-        'great dane', 'st. bernard', 'pomeranian', 'chow', 'basset', 'dalmatian'
+        'great dane', 'st. bernard', 'pomeranian', 'chow', 'basset', 'dalmatian',
+        'dingo', 'wolfhound', 'elkhound', 'groenendael', 'papillon', 'whippet'
     ]
 
-    is_cat = any(keyword in top_label for keyword in cat_keywords)
-    is_dog = any(keyword in top_label for keyword in dog_keywords)
+    is_cat = any(kw in top_label for kw in cat_keywords)
+    is_dog = any(kw in top_label for kw in dog_keywords)
 
     if score < (confidence_threshold * 100):
         return "Other", score, top_label
@@ -141,20 +171,20 @@ def process_and_classify(image, confidence_threshold=0.25):
 
 
 # ---------------------------------------------------------
-# File Upload Tab
+# Image Upload Section
 # ---------------------------------------------------------
 uploaded_file = st.file_uploader(
-    "Upload an image of a pet or object...", 
+    "Upload a Pet Image...", 
     type=["jpg", "jpeg", "png", "webp"]
 )
 
 
 # ---------------------------------------------------------
-# Analysis Report & Dynamic GIF Change
+# Analysis & Dynamic Output Section
 # ---------------------------------------------------------
 if uploaded_file is not None:
     st.divider()
-    st.markdown("### 📊 Analysis Report")
+    st.subheader("📋 Analysis Report")
 
     image = Image.open(uploaded_file).convert("RGB")
     
@@ -164,23 +194,24 @@ if uploaded_file is not None:
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
     with col2:
-        with st.spinner("Analyzing visual features..."):
-            pred_class, score, raw_label = process_and_classify(image)
+        with st.spinner("Analyzing pet features..."):
+            pred_class, score, raw_label = classify_pet_image(image)
 
-        # Dynamic Background update based on prediction
+        # Dynamic Background and Alert Badges
         if pred_class == "Cat":
-            set_dynamic_background(CAT_BG)
+            apply_custom_styles_and_bg(CAT_BG)
             st.success("🐱 **Specified Pet Type: CAT**")
         elif pred_class == "Dog":
-            set_dynamic_background(DOG_BG)
+            apply_custom_styles_and_bg(DOG_BG)
             st.success("🐶 **Specified Pet Type: DOG**")
         else:
-            set_dynamic_background(OTHER_BG)
+            apply_custom_styles_and_bg(OTHER_BG)
             st.warning("⚠️ **Specified Pet Type: OTHER / UNKNOWN**")
 
-        st.metric(label="Prediction Certainty", value=f"{score:.2f}%")
+        st.metric(label="Model Certainty Score", value=f"{score:.2f}%")
         st.progress(min(int(score), 100))
 
-        with st.expander("🔬 Technical Details"):
-            st.write(f"**Primary Feature Detected:** `{raw_label.title()}`")
-            st.write(f"**Classification Category:** `{pred_class}`")
+        st.markdown("---")
+        with st.expander("🔍 View Technical Details"):
+            st.write(f"**Identified ImageNet Feature:** `{raw_label.title()}`")
+            st.write(f"**Mapped Category:** `{pred_class}`")
