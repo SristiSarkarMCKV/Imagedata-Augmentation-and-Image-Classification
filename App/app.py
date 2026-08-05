@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects CSS styling to fix contrast issues in both Light and Dark modes."""
+    """Injects custom CSS to ensure complete text readability in Light and Dark modes."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -34,10 +34,10 @@ def inject_custom_styles(bg_url):
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
         ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
         
-        "/* Main Adaptive Glassmorphism Container */\n"
+        "/* Main Glassmorphism Container */\n"
         ".block-container {\n"
-        "  background: rgba(255, 255, 255, 0.95);\n"
-        "  color: #1A202C;\n"
+        "  background: rgba(255, 255, 255, 0.96);\n"
+        "  color: #1E293B !important;\n"
         "  border-radius: 28px;\n"
         "  padding: 35px 30px !important;\n"
         "  margin-top: 25px;\n"
@@ -47,27 +47,52 @@ def inject_custom_styles(bg_url):
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
         "}\n"
 
-        "/* FIX CONTRAST FOR ALL CALLOUT BOXES (info, success, warning) */\n"
-        "div[data-testid='stAlert'] { color: #1A202C !important; font-weight: 500; border-radius: 14px; }\n"
-        "div[data-testid='stAlert'] p { color: #1A202C !important; font-weight: 500; }\n"
-        "div[data-testid='stAlert'] strong { color: #000000 !important; font-weight: 800; }\n"
-        
-        "/* Dark Mode Overrides */\n"
+        "/* Global Light Theme Text Readability */\n"
+        "p, span, div, label, h1, h2, h3, h4, h5, h6, caption { color: #1E293B;\n }\n"
+
+        "/* NAVIGATION RADIO BUTTON READABILITY FIX */\n"
+        "div[data-testid='stRadio'] > div { justify-content: center; gap: 12px; border: none !important; }\n"
+        "div[data-testid='stRadio'] label {\n"
+        "  background: #F1F5F9 !important;\n"
+        "  border: 1.5px solid #CBD5E0 !important;\n"
+        "  border-radius: 12px;\n"
+        "  padding: 8px 18px;\n"
+        "  font-family: 'Outfit', sans-serif;\n"
+        "  font-weight: 700;\n"
+        "  transition: all 0.2s ease-in-out;\n"
+        "}\n"
+        "div[data-testid='stRadio'] label p, div[data-testid='stRadio'] label span {\n"
+        "  color: #0F172A !important;\n"
+        "  font-weight: 800 !important;\n"
+        "  font-size: 0.95rem !important;\n"
+        "}\n"
+        "div[data-testid='stRadio'] label:hover {\n"
+        "  border-color: #FF6B6B !important;\n"
+        "  background: #FFFFFF !important;\n"
+        "}\n"
+
+        "/* ALERT & CALLOUT CONTRAST FIX */\n"
+        "div[data-testid='stAlert'] { background-color: #F8FAFC !important; color: #0F172A !important; font-weight: 600; border-radius: 14px; border: 1px solid #CBD5E0 !important; }\n"
+        "div[data-testid='stAlert'] p, div[data-testid='stAlert'] span { color: #0F172A !important; font-weight: 600 !important; }\n"
+        "div[data-testid='stAlert'] strong { color: #000000 !important; font-weight: 800 !important; }\n"
+
+        "/* DARK MODE ADAPTIVE TEXT OVERRIDES */\n"
         "@media (prefers-color-scheme: dark) {\n"
         "  .block-container {\n"
-        "    background: rgba(15, 23, 42, 0.92) !important;\n"
-        "    color: #F7FAFC !important;\n"
+        "    background: rgba(15, 23, 42, 0.94) !important;\n"
+        "    color: #F8FAFC !important;\n"
         "    border: 1px solid rgba(255, 255, 255, 0.15);\n"
         "  }\n"
+        "  p, span, div, label, h1, h2, h3, h4, h5, h6, caption { color: #F8FAFC;\n }\n"
         "  .sub-text { color: #E2E8F0 !important; }\n"
         "  .feature-card { background: #1E293B !important; border-color: #334155 !important; }\n"
         "  .feature-card-title { color: #F8FAFC !important; }\n"
         "  .feature-card-desc { color: #CBD5E0 !important; }\n"
         "  .diagram-container { background: #0F172A !important; border-color: #334155 !important; }\n"
-        "  div[data-testid='stRadio'] label { background: rgba(30, 41, 59, 0.9) !important; color: #F1F5F9 !important; border-color: #475569 !important; }\n"
-        "  p, span, label, h1, h2, h3, h4, h5, h6 { color: #F1F5F9 !important; }\n"
-        "  div[data-testid='stAlert'] { background-color: #1E293B !important; color: #F1F5F9 !important; border-color: #475569 !important; }\n"
-        "  div[data-testid='stAlert'] p { color: #F1F5F9 !important; }\n"
+        "  div[data-testid='stRadio'] label { background: #1E293B !important; border-color: #475569 !important; }\n"
+        "  div[data-testid='stRadio'] label p, div[data-testid='stRadio'] label span { color: #F8FAFC !important; }\n"
+        "  div[data-testid='stAlert'] { background-color: #1E293B !important; border-color: #475569 !important; }\n"
+        "  div[data-testid='stAlert'] p, div[data-testid='stAlert'] span { color: #F8FAFC !important; }\n"
         "  div[data-testid='stAlert'] strong { color: #FFFFFF !important; }\n"
         "}\n"
 
@@ -75,15 +100,12 @@ def inject_custom_styles(bg_url):
         ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 1rem; color: #4A5568; font-weight: 500; line-height: 1.6; margin-bottom: 20px; }\n"
         ".highlight-text { color: #FF6B6B; font-weight: 700; }\n"
         
-        "div[data-testid='stRadio'] > div { justify-content: center; gap: 12px; border: none !important; }\n"
-        "div[data-testid='stRadio'] label { background: rgba(240, 244, 248, 0.85); border: 1px solid #CBD5E0; border-radius: 12px; padding: 6px 16px; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all 0.2s ease-in-out; color: #2D3748; }\n"
-        "div[data-testid='stRadio'] label:hover { border-color: #FF6B6B; background: #FFFFFF; }\n"
-        
         ".feature-card { background: #F8FAFC; border-radius: 14px; padding: 16px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }\n"
-        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.05rem; margin-bottom: 6px; }\n"
-        ".feature-card-desc { color: #4A5568; font-size: 0.88rem; line-height: 1.5; }\n"
+        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #1E293B; font-size: 1.05rem; margin-bottom: 6px; }\n"
+        ".feature-card-desc { color: #334155; font-size: 0.88rem; line-height: 1.5; }\n"
         
-        ".diagram-container { background: #FFFFFF; padding: 12px; border-radius: 16px; border: 1px solid #E2E8F0; margin-top: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
+        "/* FLOWCHART CONTAINER WITH NO EXTRA PADDING OR BLANK BOXES */\n"
+        ".diagram-container { background: transparent; padding: 0px; margin-top: 10px; margin-bottom: 20px; border: none; }\n"
         
         ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
         ".result-card p { color: white !important; }\n"
@@ -108,23 +130,23 @@ def inject_custom_styles(bg_url):
 
 
 def render_css_flowchart():
-    """Renders theme-adaptive visual workflow diagram with question mark icon for Other class."""
+    """Renders theme-adaptive visual workflow diagram cleanly with no top blank text box."""
     html_code = """
     <!DOCTYPE html>
     <html>
     <head>
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 2px; overflow-x: auto; }
+        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 0; margin: 0; overflow-x: auto; }
         
         :root {
           --bg-section: #F8FAFC;
           --border-color: #E2E8F0;
-          --title-color: #4A5568;
+          --title-color: #334155;
           --node-gray-bg: #FFFFFF;
           --node-gray-border: #CBD5E0;
-          --node-gray-text: #2D3748;
-          --arrow-color: #CBD5E0;
+          --node-gray-text: #0F172A;
+          --arrow-color: #94A3B8;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -147,7 +169,7 @@ def render_css_flowchart():
         .stage-img { width: 75px; height: 75px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
         
         .step-grid { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
-        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 95px; text-align: center; }
+        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 95px; text-align: center; }
         
         .node-gray { background: var(--node-gray-bg); border: 1.5px solid var(--node-gray-border); color: var(--node-gray-text); }
         .node-blue { background: #EBF8FF; border: 1.5px solid #90CDF4; color: #2B6CB0; }
@@ -199,7 +221,7 @@ def render_css_flowchart():
 
         <div class="down-arrow">⬇️</div>
 
-        <!-- STAGE 3: CATEGORIZATION WITH QUESTION MARK FOR OTHER CLASS -->
+        <!-- STAGE 3: CATEGORIZATION -->
         <div class="flow-section">
           <div class="section-title">3️⃣ Categorization & Prediction Output</div>
           <div class="stage-box">
@@ -233,7 +255,7 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    components.html(html_code, height=650, scrolling=False)
+    components.html(html_code, height=520, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -343,7 +365,7 @@ if nav_choice == "🏠 Home":
     st.markdown("### 🧬 Automated Deep Learning Pet Recognition Engine")
     
     st.markdown(
-        "<p style='font-size: 0.98rem; line-height: 1.6;'>"
+        "<p style='font-size: 0.98rem; line-height: 1.6; color: #1E293B;'>"
         "Welcome! This application utilizes state-of-the-art Deep Computer Vision to instantly analyze "
         "identify and classify uploaded images. Built on top of a 50-layer Deep Residual Neural Network "
         "(ResNet50) the system evaluates visual feature representations across 1,000 object categories "
@@ -491,5 +513,4 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-    
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
