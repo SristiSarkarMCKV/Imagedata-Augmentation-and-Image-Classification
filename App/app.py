@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects CSS styling with an exact 18px gap maintained between major content sections."""
+    """Injects robust CSS styling using uniform wrapper spacing to guarantee consistent gaps across all viewports."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -47,11 +47,10 @@ def inject_custom_styles(bg_url):
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
         "}\n"
 
-        "/* EXACT 18PX SECTION GAP SPACING CLASS */\n"
-        ".section-gap {\n"
-        "  height: 18px !important;\n"
-        "  width: 100% !important;\n"
-        "  display: block !important;\n"
+        "/* UNIFORM SECTION WRAPPER TO FORCE CONSISTENT GAPS */\n"
+        ".content-section {\n"
+        "  margin-top: 18px !important;\n"
+        "  margin-bottom: 0px !important;\n"
         "}\n"
 
         "div.element-container {\n"
@@ -59,15 +58,15 @@ def inject_custom_styles(bg_url):
         "  margin-top: 0px !important;\n"
         "}\n"
         "div[data-testid='stVerticalBlock'] {\n"
-        "  gap: 0.35rem !important;\n"
+        "  gap: 0.4rem !important;\n"
         "}\n"
         "h3 {\n"
-        "  margin-top: 0.4rem !important;\n"
-        "  margin-bottom: 0.2rem !important;\n"
+        "  margin-top: 0px !important;\n"
+        "  margin-bottom: 0.3rem !important;\n"
         "}\n"
         "h4 {\n"
-        "  margin-top: 0.4rem !important;\n"
-        "  margin-bottom: 0.2rem !important;\n"
+        "  margin-top: 0px !important;\n"
+        "  margin-bottom: 0.3rem !important;\n"
         "}\n"
         "p {\n"
         "  margin-bottom: 0.3rem !important;\n"
@@ -325,10 +324,11 @@ if nav_choice == "🏠 Home":
         unsafe_allow_html=True
     )
     
-    # Exact 18px gap spacer element between segments
-    st.markdown('<div class="section-gap"></div>', unsafe_allow_html=True)
-    
+    # Wrapped with .content-section to force an identical and constant gap across mobile/desktop
+    st.markdown('<div class="content-section">', unsafe_allow_html=True)
     st.markdown("### ⚙️ Classification System Architecture & Workflow")
+    st.markdown('</div>', unsafe_allow_html=True)
+
     col_a, col_b, col_c = st.columns(3)
     with col_a:
         st.markdown('<div class="feature-card" style="border-left-color: #FF6B6B;"><div class="feature-card-title">1. Preprocessing</div><div class="feature-card-desc">Raw image frames are normalized color-space corrected (RGB) resized and converted into PyTorch tensors.</div></div>', unsafe_allow_html=True)
@@ -337,10 +337,15 @@ if nav_choice == "🏠 Home":
     with col_c:
         st.markdown('<div class="feature-card" style="border-left-color: #4299E1;"><div class="feature-card-title">3. Logic & Classification</div><div class="feature-card-desc">Softmax output logits map top predictions into species groupings calculating confidence metrics.</div></div>', unsafe_allow_html=True)
 
+    st.markdown('<div class="content-section">', unsafe_allow_html=True)
     st.markdown("#### 📊 Visual Workflow Diagram")
+    st.markdown('</div>', unsafe_allow_html=True)
     render_css_flowchart()
 
+    st.markdown('<div class="content-section">', unsafe_allow_html=True)
     st.markdown("#### 🎯 Core Capabilities Highlight")
+    st.markdown('</div>', unsafe_allow_html=True)
+
     col1, col2, col3 = st.columns(3)
     with col1:
         st.info("**⚡ Instant Analysis**\n\nHigh-speed tensor processing delivering real-time predictions.")
@@ -349,7 +354,9 @@ if nav_choice == "🏠 Home":
     with col3:
         st.warning("**🛡️ Smart Grouping**\n\nFallback categorization logic ensuring precise non-pet filters.")
 
+    st.markdown('<div class="content-section">', unsafe_allow_html=True)
     st.button("🚀 Launch Image Classifier Engine", on_click=switch_to_prediction)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # =========================================================
@@ -448,5 +455,6 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
+
 
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
