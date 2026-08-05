@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects Google Fonts, vibrant typography colors, and frosted glass UI styling."""
+    """Injects Google Fonts, glassmorphism containers, and polished card designs."""
     st.markdown(
         f"""
         <style>
@@ -28,24 +28,25 @@ def inject_custom_styles(bg_url):
         }}
 
         .stApp {{
-            background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.65)), url("{bg_url}");
+            background-image: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), url("{bg_url}");
             background-attachment: fixed;
             background-size: cover;
             background-position: center;
         }}
 
-        /* Frosted Glass Container */
+        /* Frosted Glass Main Container */
         .block-container {{
-            background: rgba(255, 255, 255, 0.94);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 28px;
             padding: 40px !important;
             margin-top: 35px;
             margin-bottom: 35px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }}
 
+        /* Headings */
         .main-title {{
             font-family: 'Outfit', sans-serif;
             text-align: center;
@@ -54,17 +55,17 @@ def inject_custom_styles(bg_url):
             -webkit-text-fill-color: transparent;
             font-size: 3.2rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             letter-spacing: -1px;
         }}
 
         .sub-text {{
             font-family: 'Poppins', sans-serif;
             text-align: center;
-            font-size: 1.15rem;
-            color: #2D3748;
+            font-size: 1.1rem;
+            color: #4A5568;
             font-weight: 500;
-            line-height: 1.7;
+            line-height: 1.6;
             margin-bottom: 25px;
         }}
 
@@ -73,10 +74,41 @@ def inject_custom_styles(bg_url):
             font-weight: 700;
         }}
 
+        /* Results Card Design */
+        .result-card {{
+            border-radius: 20px;
+            padding: 22px;
+            text-align: center;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }}
+
+        .result-cat {{
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        }}
+
+        .result-dog {{
+            background: linear-gradient(135deg, #4299E1, #3182CE);
+        }}
+
+        .result-other {{
+            background: linear-gradient(135deg, #ED8936, #ECC94B);
+        }}
+
+        .card-title {{
+            font-size: 1.8rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }}
+
+        /* Upload Uploader Box */
         div[data-testid="stFileUploader"] {{
             border: 3px dashed #4ECDC4;
             border-radius: 20px;
-            background: rgba(247, 250, 252, 0.85);
+            background: rgba(247, 250, 252, 0.9);
             padding: 15px;
             transition: all 0.3s ease;
         }}
@@ -86,29 +118,31 @@ def inject_custom_styles(bg_url):
             transform: translateY(-2px);
         }}
 
-        [data-testid="stMetricValue"] {{
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.4rem !important;
-            color: #2B6CB0;
-            font-weight: 800;
-        }}
-
-        /* Primary Button Style */
+        /* Action Buttons */
         .stButton>button {{
             background: linear-gradient(135deg, #FF6B6B, #FF8E53);
             color: white;
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            font-size: 1.1rem;
-            border-radius: 14px;
+            font-size: 1.15rem;
+            border-radius: 16px;
             border: none;
-            padding: 10px 24px;
+            padding: 12px 28px;
+            width: 100%;
             transition: all 0.3s ease;
+            box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35);
         }}
 
         .stButton>button:hover {{
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5);
+        }}
+
+        [data-testid="stMetricValue"] {{
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem !important;
+            color: #2B6CB0;
+            font-weight: 800;
         }}
         </style>
         """,
@@ -120,7 +154,7 @@ inject_custom_styles(PERMANENT_BG_GIF)
 
 
 # ---------------------------------------------------------
-# AI Classification Engine (Species-First Hierarchy)
+# AI Model & Categorization Engine
 # ---------------------------------------------------------
 @st.cache_resource
 def load_classifier():
@@ -135,10 +169,6 @@ def load_classifier():
 model, transform, categories = load_classifier()
 
 def classify_image(image, confidence_threshold=0.05):
-    """
-    Evaluates predictions across feline & canine taxonomies BEFORE thresholding.
-    Fixes lower-confidence domestic cat breed misclassifications.
-    """
     input_tensor = transform(image).unsqueeze(0)
     
     with torch.no_grad():
@@ -170,19 +200,27 @@ def classify_image(image, confidence_threshold=0.05):
     is_cat = any(any(kw in label for kw in cat_keywords) for label in top5_labels[:3])
     is_dog = any(any(kw in label for kw in dog_keywords) for label in top5_labels[:3])
 
-    # Species check comes first
+    # Build Top-3 probability list for display
+    top3_details = []
+    for idx in range(3):
+        top3_details.append((
+            categories[top5_catid[idx].item()].title(), 
+            top5_prob[idx].item() * 100
+        ))
+
+    # Species check first to ensure proper classification
     if is_cat:
-        return "Cat", top1_score, top1_label
+        return "Cat", top1_score, top1_label, top3_details
     elif is_dog:
-        return "Dog", top1_score, top1_label
+        return "Dog", top1_score, top1_label, top3_details
     elif top1_score < (confidence_threshold * 100):
-        return "Other", top1_score, top1_label
+        return "Other", top1_score, top1_label, top3_details
     else:
-        return "Other", top1_score, top1_label
+        return "Other", top1_score, top1_label, top3_details
 
 
 # ---------------------------------------------------------
-# Navigation & Session State Logic
+# Page Navigation Setup
 # ---------------------------------------------------------
 if 'page' not in st.session_state:
     st.session_state.page = 'upload'
@@ -204,10 +242,9 @@ if st.session_state.page == 'upload':
     st.markdown("<h1 class='main-title'>✨ Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
     st.markdown(
         "<p class='sub-text'>"
-        "Welcome! 🎈 Upload any pet image below and click analyze. "
-        "The website will automatically redirect you to view the specified pet type: "
-        "<span class='highlight-text'>🐱 Cat</span>, <span class='highlight-text'>🐶 Dog</span>, "
-        "or <span class='highlight-text'>❓ Other</span>!"
+        "Upload any pet image below to analyze it. "
+        "The website will classify whether it is a <span class='highlight-text'>🐱 Cat</span>, "
+        "<span class='highlight-text'>🐶 Dog</span>, or <span class='highlight-text'>❓ Other</span>!"
         "</p>", 
         unsafe_allow_html=True
     )
@@ -216,60 +253,89 @@ if st.session_state.page == 'upload':
 
     st.markdown("### 📥 Step 1: Upload Your Image")
     file = st.file_uploader(
-        "Choose a pet image (JPG, JPEG, PNG, WEBP)... 📸", 
+        "Choose a pet image file (JPG, JPEG, PNG, WEBP)... 📸", 
         type=["jpg", "jpeg", "png", "webp"]
     )
 
     if file is not None:
         st.session_state.uploaded_file = file
         
-        # Display image preview & analyze button
         image = Image.open(file).convert("RGB")
         st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
         
-        st.info("👇 Click the button below to process and view results on the results page!")
-        st.button("🚀 Analyze Image & See Results", on_click=go_to_results)
+        st.write("")
+        st.button("🚀 Analyze Image & View Results", on_click=go_to_results)
 
 
 # =========================================================
-# PAGE 2: RESULTS PAGE
+# PAGE 2: ATTRACTIVE RESULTS PAGE
 # =========================================================
 elif st.session_state.page == 'results':
-    st.markdown("<h1 class='main-title'>📊 Analysis Report Page</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-text'>Here are the detailed classification findings from our AI model!</p>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>📊 Analysis Report</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='sub-text'>Here are the classification findings from our AI model!</p>", unsafe_allow_html=True)
     
     st.divider()
 
     if st.session_state.uploaded_file is not None:
         image = Image.open(st.session_state.uploaded_file).convert("RGB")
         
-        col1, col2 = st.columns([1, 1], gap="medium")
+        col1, col2 = st.columns([1, 1], gap="large")
 
         with col1:
-            st.image(image, caption="🖼️ Uploaded Image", use_container_width=True)
+            st.markdown("#### 🖼️ Image Preview")
+            st.image(image, use_container_width=True)
 
         with col2:
-            with st.spinner("🧠 AI is analyzing visual patterns... 🔍"):
-                pred_class, score, raw_label = classify_image(image)
+            with st.spinner("🧠 Scanning visual patterns... 🔍"):
+                pred_class, score, raw_label, top3_list = classify_image(image)
 
-            # Result Badge
+            # Styled Hero Result Card
             if pred_class == "Cat":
-                st.success("🐱 **Specified Pet Type: CAT** 🐈")
+                st.markdown(
+                    """
+                    <div class="result-card result-cat">
+                        <p class="card-title">🐱 Specified Pet Type: CAT</p>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
             elif pred_class == "Dog":
-                st.success("🐶 **Specified Pet Type: DOG** 🐕")
+                st.markdown(
+                    """
+                    <div class="result-card result-dog">
+                        <p class="card-title">🐶 Specified Pet Type: DOG</p>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
             else:
-                st.warning("❓ **Specified Pet Type: OTHER / UNKNOWN** 🦄")
+                st.markdown(
+                    """
+                    <div class="result-card result-other">
+                        <p class="card-title">❓ Specified Pet Type: OTHER / UNKNOWN</p>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
 
-            st.metric(label="🎯 AI Confidence Score", value=f"{score:.2f}%")
+            # AI Certainty Metric & Bar
+            st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
             st.progress(min(int(score), 100))
 
+            # Top 3 Prediction Distribution
             st.markdown("---")
-            with st.expander("🔬 View Technical Detection Details"):
-                st.write(f"🏷️ **Identified Feature:** `{raw_label.title()}`")
-                st.write(f"🏷️ **Final Grouping:** `{pred_class}`")
+            st.markdown("##### 📈 Top Feature Matches:")
+            for feat_name, feat_score in top3_list:
+                st.write(f"**{feat_name}**: `{feat_score:.1f}%`")
+                st.progress(min(int(feat_score), 100))
+
+            st.markdown("---")
+            with st.expander("🔬 View Technical Details"):
+                st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
+                st.write(f"🏷️ **Mapped Grouping:** `{pred_class}`")
 
         st.divider()
         st.button("🔄 Upload Another Image", on_click=go_to_upload)
     else:
-        st.warning("No image uploaded yet!")
-        st.button("⬅️ Go Back to Upload Page", on_click=go_to_upload)
+        st.warning("No image found!")
+        st.button("⬅️ Back to Upload Page", on_click=go_to_upload)
