@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects Google Fonts, glassmorphism containers, and polished card designs."""
+    """Injects Google Fonts, glassmorphism containers, custom scrollbar styling, and polished card designs."""
     st.markdown(
         f"""
         <style>
@@ -27,6 +27,23 @@ def inject_custom_styles(bg_url):
             font-family: 'Poppins', sans-serif;
         }}
 
+        /* Dynamic Custom Gradient Scrollbar */
+        ::-webkit-scrollbar {{
+            width: 12px;
+        }}
+        ::-webkit-scrollbar-track {{
+            background: rgba(15, 23, 42, 0.6);
+        }}
+        ::-webkit-scrollbar-thumb {{
+            background: linear-gradient(180deg, #FF6B6B, #FF8E53, #4ECDC4);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }}
+        ::-webkit-scrollbar-thumb:hover {{
+            background: linear-gradient(180deg, #FF5252, #FF7043, #26A69A);
+        }}
+
+        /* Full page Background */
         .stApp {{
             background-image: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), url("{bg_url}");
             background-attachment: fixed;
@@ -46,17 +63,17 @@ def inject_custom_styles(bg_url):
             border: 1px solid rgba(255, 255, 255, 0.4);
         }}
 
-        /* Headings */
+        /* Main Headings */
         .main-title {{
             font-family: 'Outfit', sans-serif;
             text-align: center;
             background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 3.2rem;
+            font-size: 3rem;
             font-weight: 900;
             margin-bottom: 5px;
-            letter-spacing: -1px;
+            letter-spacing: -0.5px;
         }}
 
         .sub-text {{
@@ -99,12 +116,12 @@ def inject_custom_styles(bg_url):
         }}
 
         .card-title {{
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             margin: 0;
             letter-spacing: 0.5px;
         }}
 
-        /* Upload Uploader Box */
+        /* Upload Box Styling */
         div[data-testid="stFileUploader"] {{
             border: 3px dashed #4ECDC4;
             border-radius: 20px;
@@ -200,7 +217,7 @@ def classify_image(image, confidence_threshold=0.05):
     is_cat = any(any(kw in label for kw in cat_keywords) for label in top5_labels[:3])
     is_dog = any(any(kw in label for kw in dog_keywords) for label in top5_labels[:3])
 
-    # Build Top-3 probability list for display
+    # Top-3 probability list for UI
     top3_details = []
     for idx in range(3):
         top3_details.append((
@@ -208,7 +225,7 @@ def classify_image(image, confidence_threshold=0.05):
             top5_prob[idx].item() * 100
         ))
 
-    # Species check first to ensure proper classification
+    # Species check hierarchy
     if is_cat:
         return "Cat", top1_score, top1_label, top3_details
     elif is_dog:
@@ -220,7 +237,7 @@ def classify_image(image, confidence_threshold=0.05):
 
 
 # ---------------------------------------------------------
-# Page Navigation Setup
+# Navigation & Session State
 # ---------------------------------------------------------
 if 'page' not in st.session_state:
     st.session_state.page = 'upload'
@@ -239,7 +256,7 @@ def go_to_upload():
 # PAGE 1: UPLOAD PAGE
 # =========================================================
 if st.session_state.page == 'upload':
-    st.markdown("<h1 class='main-title'>✨ Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>🐾 Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
     st.markdown(
         "<p class='sub-text'>"
         "Upload any pet image below to analyze it. "
@@ -268,10 +285,10 @@ if st.session_state.page == 'upload':
 
 
 # =========================================================
-# PAGE 2: ATTRACTIVE RESULTS PAGE
+# PAGE 2: RESULTS PAGE
 # =========================================================
 elif st.session_state.page == 'results':
-    st.markdown("<h1 class='main-title'>📊 Analysis Report</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>🐾 Analysis Report 🐾</h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-text'>Here are the classification findings from our AI model!</p>", unsafe_allow_html=True)
     
     st.divider()
@@ -289,7 +306,7 @@ elif st.session_state.page == 'results':
             with st.spinner("🧠 Scanning visual patterns... 🔍"):
                 pred_class, score, raw_label, top3_list = classify_image(image)
 
-            # Styled Hero Result Card
+            # Hero Result Card
             if pred_class == "Cat":
                 st.markdown(
                     """
@@ -322,7 +339,7 @@ elif st.session_state.page == 'results':
             st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
             st.progress(min(int(score), 100))
 
-            # Top 3 Prediction Distribution
+            # Top 3 Matches
             st.markdown("---")
             st.markdown("##### 📈 Top Feature Matches:")
             for feat_name, feat_score in top3_list:
