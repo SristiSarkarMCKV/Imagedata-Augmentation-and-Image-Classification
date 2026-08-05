@@ -4,7 +4,7 @@ from PIL import Image
 from torchvision import models
 
 # ---------------------------------------------------------
-# Page Setup & Base Configuration
+# Page Setup & Configuration
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Pet Image Classifier 🐾",
@@ -12,7 +12,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Static Background GIF (Applied universally across all states)
+# Permanent Background GIF
 PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJvZTBkY3NmY2Y3OXBzZW43bjZsdGRzYXhiZnA0dms4ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vUc341wCXiY4U/giphy.gif"
 
 
@@ -23,7 +23,6 @@ def inject_custom_styles(bg_url):
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');
 
-        /* Global Font & Background */
         html, body, [class*="css"] {{
             font-family: 'Poppins', sans-serif;
         }}
@@ -47,7 +46,6 @@ def inject_custom_styles(bg_url):
             border: 1px solid rgba(255, 255, 255, 0.3);
         }}
 
-        /* Header Styling */
         .main-title {{
             font-family: 'Outfit', sans-serif;
             text-align: center;
@@ -58,7 +56,6 @@ def inject_custom_styles(bg_url):
             font-weight: 900;
             margin-bottom: 10px;
             letter-spacing: -1px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }}
 
         .sub-text {{
@@ -76,7 +73,6 @@ def inject_custom_styles(bg_url):
             font-weight: 700;
         }}
 
-        /* Upload Widget Customization */
         div[data-testid="stFileUploader"] {{
             border: 3px dashed #4ECDC4;
             border-radius: 20px;
@@ -90,7 +86,6 @@ def inject_custom_styles(bg_url):
             transform: translateY(-2px);
         }}
 
-        /* Metrics Styling */
         [data-testid="stMetricValue"] {{
             font-family: 'Outfit', sans-serif;
             font-size: 2.4rem !important;
@@ -98,11 +93,22 @@ def inject_custom_styles(bg_url):
             font-weight: 800;
         }}
 
-        /* Section Subheaders */
-        h3 {{
-            font-family: 'Outfit', sans-serif !argument;
-            color: #1A202C !important;
-            font-weight: 700 !important;
+        /* Primary Button Style */
+        .stButton>button {{
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 14px;
+            border: none;
+            padding: 10px 24px;
+            transition: all 0.3s ease;
+        }}
+
+        .stButton>button:hover {{
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
         }}
         </style>
         """,
@@ -110,28 +116,11 @@ def inject_custom_styles(bg_url):
     )
 
 
-# Apply permanent GIF background
 inject_custom_styles(PERMANENT_BG_GIF)
 
 
 # ---------------------------------------------------------
-# Header & Instructions
-# ---------------------------------------------------------
-st.markdown("<h1 class='main-title'>✨ Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
-st.markdown(
-    "<p class='sub-text'>"
-    "Welcome! 🎈 Upload any image below and our smart AI model will inspect it. "
-    "Once uploaded, the exact type of pet—whether it is a <span class='highlight-text'>🐱 Cat</span>, "
-    "<span class='highlight-text'>🐶 Dog</span>, or <span class='highlight-text'>❓ Other</span>—will be specified!"
-    "</p>", 
-    unsafe_allow_html=True
-)
-
-st.divider()
-
-
-# ---------------------------------------------------------
-# AI Classification Engine (ResNet-50 Top-5 Inspection)
+# AI Classification Engine (Species-First Hierarchy)
 # ---------------------------------------------------------
 @st.cache_resource
 def load_classifier():
@@ -145,11 +134,10 @@ def load_classifier():
 
 model, transform, categories = load_classifier()
 
-def classify_image(image, confidence_threshold=0.18):
+def classify_image(image, confidence_threshold=0.05):
     """
-    Evaluates top predictions across exhaustive feline & canine taxonomies.
-    Also checks top-5 candidates so cats are detected even if the specific 
-    breed isn't the single top-1 label.
+    Evaluates predictions across feline & canine taxonomies BEFORE thresholding.
+    Fixes lower-confidence domestic cat breed misclassifications.
     """
     input_tensor = transform(image).unsqueeze(0)
     
@@ -157,21 +145,18 @@ def classify_image(image, confidence_threshold=0.18):
         outputs = model(input_tensor)
         probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
     
-    # Get top 5 predictions to prevent missing breed variations
     top5_prob, top5_catid = torch.topk(probabilities, 5)
     
     top1_score = top5_prob[0].item() * 100
     top1_label = categories[top5_catid[0].item()].lower()
 
-    # Generic & breed-specific Cat keywords
     cat_keywords = [
-        'cat', 'tabby', 'tiger cat', 'persian cat', 'siamese cat', 'siamese', 
-        'egyptian cat', 'cougar', 'lynx', 'leopard', 'panther', 'cheetah', 
-        'jaguar', 'lion', 'angora', 'felis', 'kitten', 'tomcat', 'alley cat',
-        'marmalade cat', 'tortoiseshell', 'calico', 'manx', 'burmese'
+        'cat', 'tabby', 'persian', 'siamese', 'egyptian', 'cougar', 'lynx', 
+        'leopard', 'panther', 'cheetah', 'jaguar', 'lion', 'angora', 'felis', 
+        'kitten', 'tomcat', 'alley cat', 'marmalade', 'tortoiseshell', 'calico', 
+        'manx', 'burmese'
     ]
     
-    # Generic & breed-specific Dog keywords
     dog_keywords = [
         'dog', 'retriever', 'terrier', 'spaniel', 'poodle', 'hound', 'bulldog', 
         'shepherd', 'husky', 'collie', 'pug', 'chihuahua', 'beagle', 'mutt', 
@@ -180,63 +165,111 @@ def classify_image(image, confidence_threshold=0.18):
         'dingo', 'wolfhound', 'elkhound', 'groenendael', 'papillon', 'whippet', 'puppy'
     ]
 
-    # Check top-5 classes to catch any feline/canine markers
     top5_labels = [categories[idx.item()].lower() for idx in top5_catid]
     
-    is_cat = any(any(kw in label for kw in cat_keywords) for label in top5_labels[:2])
-    is_dog = any(any(kw in label for kw in dog_keywords) for label in top5_labels[:2])
+    is_cat = any(any(kw in label for kw in cat_keywords) for label in top5_labels[:3])
+    is_dog = any(any(kw in label for kw in dog_keywords) for label in top5_labels[:3])
 
-    if top1_score < (confidence_threshold * 100):
-        return "Other", top1_score, top1_label
-    elif is_cat:
+    # Species check comes first
+    if is_cat:
         return "Cat", top1_score, top1_label
     elif is_dog:
         return "Dog", top1_score, top1_label
+    elif top1_score < (confidence_threshold * 100):
+        return "Other", top1_score, top1_label
     else:
         return "Other", top1_score, top1_label
 
 
 # ---------------------------------------------------------
-# Image Upload Section
+# Navigation & Session State Logic
 # ---------------------------------------------------------
-st.markdown("### 📥 Step 1: Upload Your Pet Image")
-uploaded_file = st.file_uploader(
-    "Choose an image file (JPG, JPEG, PNG, WEBP)... 📸", 
-    type=["jpg", "jpeg", "png", "webp"]
-)
+if 'page' not in st.session_state:
+    st.session_state.page = 'upload'
+if 'uploaded_file' not in st.session_state:
+    st.session_state.uploaded_file = None
+
+def go_to_results():
+    st.session_state.page = 'results'
+
+def go_to_upload():
+    st.session_state.page = 'upload'
+    st.session_state.uploaded_file = None
 
 
-# ---------------------------------------------------------
-# Analysis & Output Report
-# ---------------------------------------------------------
-if uploaded_file is not None:
+# =========================================================
+# PAGE 1: UPLOAD PAGE
+# =========================================================
+if st.session_state.page == 'upload':
+    st.markdown("<h1 class='main-title'>✨ Pet Image Classifier 🐾</h1>", unsafe_allow_html=True)
+    st.markdown(
+        "<p class='sub-text'>"
+        "Welcome! 🎈 Upload any pet image below and click analyze. "
+        "The website will automatically redirect you to view the specified pet type: "
+        "<span class='highlight-text'>🐱 Cat</span>, <span class='highlight-text'>🐶 Dog</span>, "
+        "or <span class='highlight-text'>❓ Other</span>!"
+        "</p>", 
+        unsafe_allow_html=True
+    )
+
     st.divider()
-    st.markdown("### 📊 Step 2: Analysis Report")
 
-    image = Image.open(uploaded_file).convert("RGB")
+    st.markdown("### 📥 Step 1: Upload Your Image")
+    file = st.file_uploader(
+        "Choose a pet image (JPG, JPEG, PNG, WEBP)... 📸", 
+        type=["jpg", "jpeg", "png", "webp"]
+    )
+
+    if file is not None:
+        st.session_state.uploaded_file = file
+        
+        # Display image preview & analyze button
+        image = Image.open(file).convert("RGB")
+        st.image(image, caption="🖼️ Image Ready for Analysis", use_container_width=True)
+        
+        st.info("👇 Click the button below to process and view results on the results page!")
+        st.button("🚀 Analyze Image & See Results", on_click=go_to_results)
+
+
+# =========================================================
+# PAGE 2: RESULTS PAGE
+# =========================================================
+elif st.session_state.page == 'results':
+    st.markdown("<h1 class='main-title'>📊 Analysis Report Page</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='sub-text'>Here are the detailed classification findings from our AI model!</p>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1], gap="medium")
+    st.divider()
 
-    with col1:
-        st.image(image, caption="🖼️ Uploaded Preview", use_container_width=True)
+    if st.session_state.uploaded_file is not None:
+        image = Image.open(st.session_state.uploaded_file).convert("RGB")
+        
+        col1, col2 = st.columns([1, 1], gap="medium")
 
-    with col2:
-        with st.spinner("🧠 AI is scanning visual patterns... 🔍"):
-            pred_class, score, raw_label = classify_image(image)
+        with col1:
+            st.image(image, caption="🖼️ Uploaded Image", use_container_width=True)
 
-        # Result badge display with emojis
-        if pred_class == "Cat":
-            st.success("🐱 **Specified Pet Type: CAT** 🐈")
-        elif pred_class == "Dog":
-            st.success("🐶 **Specified Pet Type: DOG** 🐕")
-        else:
-            st.warning("❓ **Specified Pet Type: OTHER / UNKNOWN** 🦄")
+        with col2:
+            with st.spinner("🧠 AI is analyzing visual patterns... 🔍"):
+                pred_class, score, raw_label = classify_image(image)
 
-        st.metric(label="🎯 AI Confidence Score", value=f"{score:.2f}%")
-        st.progress(min(int(score), 100))
+            # Result Badge
+            if pred_class == "Cat":
+                st.success("🐱 **Specified Pet Type: CAT** 🐈")
+            elif pred_class == "Dog":
+                st.success("🐶 **Specified Pet Type: DOG** 🐕")
+            else:
+                st.warning("❓ **Specified Pet Type: OTHER / UNKNOWN** 🦄")
 
-        st.markdown("---")
-        with st.expander("🔬 View Technical Detection Details"):
-            st.write(f"🏷️ **Identified Feature:** `{raw_label.title()}`")
-            st.write(f"🏷️ **Final Grouping:** `{pred_class}`")
-            st.caption("⚡ Model scans multi-scale feature hierarchies to detect cats and dogs even if breed metadata is absent.")
+            st.metric(label="🎯 AI Confidence Score", value=f"{score:.2f}%")
+            st.progress(min(int(score), 100))
+
+            st.markdown("---")
+            with st.expander("🔬 View Technical Detection Details"):
+                st.write(f"🏷️ **Identified Feature:** `{raw_label.title()}`")
+                st.write(f"🏷️ **Final Grouping:** `{pred_class}`")
+
+        st.divider()
+        st.button("🔄 Upload Another Image", on_click=go_to_upload)
+    else:
+        st.warning("No image uploaded yet!")
+        st.button("⬅️ Go Back to Upload Page", on_click=go_to_upload)
