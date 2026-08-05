@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects custom CSS styling with strict responsive constraints."""
+    """Injects theme-adaptive CSS styling for maximum contrast in both Light and Dark modes."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -26,105 +26,122 @@ def inject_custom_styles(bg_url):
         "::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.7); }\n"
         "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #FF781F, #FF9800, #F57C00); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.25); }\n"
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
-        ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
-        ".block-container { background: rgba(255, 255, 255, 0.95); border-radius: 28px; padding: 40px !important; margin-top: 35px; margin-bottom: 35px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.4); }\n"
-        ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.7rem; font-weight: 900; margin-bottom: 5px; letter-spacing: -0.5px; }\n"
-        ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 1.05rem; color: #4A5568; font-weight: 500; line-height: 1.6; margin-bottom: 25px; }\n"
-        ".highlight-text { color: #E53E3E; font-weight: 700; }\n"
-        "div[data-testid='stRadio'] > div { justify-content: center; gap: 15px; }\n"
-        "div[data-testid='stRadio'] label { background: rgba(240, 244, 248, 0.8); border: 1px solid #CBD5E0; border-radius: 12px; padding: 8px 18px; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all 0.2s ease-in-out; }\n"
+        ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
+        
+        "/* Adaptive Glassmorphism Container */\n"
+        ".block-container {\n"
+        "  background: rgba(255, 255, 255, 0.95);\n"
+        "  color: #1A202C;\n"
+        "  border-radius: 28px;\n"
+        "  padding: 35px 30px !important;\n"
+        "  margin-top: 25px;\n"
+        "  margin-bottom: 25px;\n"
+        "  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);\n"
+        "  backdrop-filter: blur(14px);\n"
+        "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
+        "}\n"
+        
+        "/* Dark Mode Overrides for Main Container */\n"
+        "@media (prefers-color-scheme: dark) {\n"
+        "  .block-container {\n"
+        "    background: rgba(15, 23, 42, 0.92) !important;\n"
+        "    color: #F7FAFC !important;\n"
+        "    border: 1px solid rgba(255, 255, 255, 0.15);\n"
+        "  }\n"
+        "  .sub-text { color: #E2E8F0 !important; }\n"
+        "  .feature-card { background: #1E293B !important; border-color: #334155 !important; }\n"
+        "  .feature-card-title { color: #F8FAFC !important; }\n"
+        "  .feature-card-desc { color: #CBD5E0 !important; }\n"
+        "  .diagram-container { background: #0F172A !important; border-color: #334155 !important; }\n"
+        "  div[data-testid='stRadio'] label { background: rgba(30, 41, 59, 0.9) !important; color: #F1F5F9 !important; border-color: #475569 !important; }\n"
+        "  p, span, label, h1, h2, h3, h4, h5, h6 { color: #F1F5F9 !important; }\n"
+        "}\n"
+
+        ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 5px; letter-spacing: -0.5px; }\n"
+        ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 1rem; color: #4A5568; font-weight: 500; line-height: 1.6; margin-bottom: 20px; }\n"
+        ".highlight-text { color: #FF6B6B; font-weight: 700; }\n"
+        
+        "div[data-testid='stRadio'] > div { justify-content: center; gap: 12px; border: none !important; }\n"
+        "div[data-testid='stRadio'] label { background: rgba(240, 244, 248, 0.85); border: 1px solid #CBD5E0; border-radius: 12px; padding: 6px 16px; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all 0.2s ease-in-out; color: #2D3748; }\n"
         "div[data-testid='stRadio'] label:hover { border-color: #FF6B6B; background: #FFFFFF; }\n"
-        ".feature-card { background: #F7FAFC; border-radius: 16px; padding: 20px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
-        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.15rem; margin-bottom: 8px; }\n"
-        ".feature-card-desc { color: #718096; font-size: 0.9rem; line-height: 1.5; }\n"
-        ".diagram-container { background: #FFFFFF; padding: 10px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
-        ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
+        
+        ".feature-card { background: #F8FAFC; border-radius: 14px; padding: 16px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }\n"
+        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.05rem; margin-bottom: 6px; }\n"
+        ".feature-card-desc { color: #718096; font-size: 0.88rem; line-height: 1.5; }\n"
+        
+        ".diagram-container { background: #FFFFFF; padding: 12px; border-radius: 16px; border: 1px solid #E2E8F0; margin-top: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
+        
+        ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
+        ".result-card p { color: white !important; }\n"
         ".result-cat { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }\n"
         ".result-dog { background: linear-gradient(135deg, #4299E1, #3182CE); }\n"
         ".result-other { background: linear-gradient(135deg, #ED8936, #ECC94B); }\n"
-        ".card-title { font-size: 1.6rem; margin: 0; letter-spacing: 0.5px; }\n"
-        "div[data-testid='stFileUploader'] { border: 3px dashed #4ECDC4; border-radius: 20px; background: rgba(247, 250, 252, 0.9); padding: 15px; transition: all 0.3s ease; }\n"
+        ".card-title { font-size: 1.5rem; margin: 0; letter-spacing: 0.5px; color: #FFFFFF !important; }\n"
+        
+        "div[data-testid='stFileUploader'] { border: 3px dashed #4ECDC4; border-radius: 20px; background: rgba(247, 250, 252, 0.4); padding: 15px; transition: all 0.3s ease; }\n"
         "div[data-testid='stFileUploader']:hover { border-color: #FF6B6B; transform: translateY(-2px); }\n"
-        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.15rem; border-radius: 16px; border: none; padding: 12px 28px; width: 100%; transition: all 0.3s ease; box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35); }\n"
+        
+        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; border-radius: 16px; border: none; padding: 12px 28px; width: 100%; transition: all 0.3s ease; box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35); }\n"
         ".stButton>button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5); }\n"
-        "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 2.2rem !important; color: #2B6CB0; font-weight: 800; }\n"
+        
+        "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 2rem !important; color: #3182CE !important; font-weight: 800; }\n"
+        "hr { margin: 15px 0 !important; border-color: #E2E8F0 !important; }\n"
+        "ul { list-style-type: none !important; padding-left: 0 !important; }\n"
+        "li { padding: 4px 0; }\n"
         "</style>"
     )
     st.markdown(css, unsafe_allow_html=True)
 
 
 def render_css_flowchart():
-    """Renders all 3 phases fully visible without clipping or scrolling."""
+    """Renders theme-adaptive visual workflow diagram with demo stage illustrations."""
     html_code = """
     <!DOCTYPE html>
     <html>
     <head>
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-          font-family: 'Poppins', sans-serif; 
-          background: transparent; 
-          padding: 2px;
+        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 2px; }
+        
+        /* Light Theme Defaults */
+        :root {
+          --bg-section: #F8FAFC;
+          --border-color: #E2E8F0;
+          --title-color: #4A5568;
+          --node-gray-bg: #FFFFFF;
+          --node-gray-border: #CBD5E0;
+          --node-gray-text: #2D3748;
+          --arrow-color: #CBD5E0;
         }
-        .flow-wrapper {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          width: 100%;
+
+        /* Dark Theme Media Rule for iframe internal elements */
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --bg-section: #1E293B;
+            --border-color: #334155;
+            --title-color: #CBD5E0;
+            --node-gray-bg: #0F172A;
+            --node-gray-border: #475569;
+            --node-gray-text: #F1F5F9;
+            --arrow-color: #64748B;
+          }
         }
-        .flow-section {
-          background: #F8FAFC;
-          border: 1px solid #E2E8F0;
-          border-radius: 12px;
-          padding: 10px;
-        }
-        .section-title {
-          font-size: 0.85rem;
-          font-weight: 800;
-          color: #4A5568;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 6px;
-        }
-        .step-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          align-items: center;
-        }
-        .node {
-          padding: 8px 10px;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: #2D3748;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-          flex: 1 1 auto;
-          min-width: 120px;
-          justify-content: center;
-          text-align: center;
-        }
-        .node-gray { background: #EDF2F7; border: 1.5px solid #CBD5E0; }
+
+        .flow-wrapper { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .flow-section { background: var(--bg-section); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; }
+        .section-title { font-size: 0.85rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .stage-box { display: flex; gap: 12px; align-items: center; }
+        .stage-img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
+        .step-grid { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
+        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 110px; justify-content: center; text-align: center; }
+        
+        .node-gray { background: var(--node-gray-bg); border: 1.5px solid var(--node-gray-border); color: var(--node-gray-text); }
         .node-blue { background: #EBF8FF; border: 1.5px solid #90CDF4; color: #2B6CB0; }
         .node-orange { background: #FFFAF0; border: 1.5px solid #FBD38D; color: #C05621; }
         .node-green { background: #F0FFF4; border: 1.5px solid #9AE6B4; color: #276749; }
-        .arrow {
-          color: #A0AEC0;
-          font-weight: bold;
-          font-size: 0.9rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .down-arrow {
-          text-align: center;
-          font-size: 1rem;
-          color: #A0AEC0;
-          margin: -2px 0;
-        }
+        
+        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.85rem; }
+        .down-arrow { text-align: center; font-size: 1rem; color: var(--arrow-color); margin: -4px 0; }
       </style>
     </head>
     <body>
@@ -132,15 +149,18 @@ def render_css_flowchart():
         
         <!-- STEP 1 -->
         <div class="flow-section">
-          <div class="section-title">1️⃣ Input Preprocessing</div>
-          <div class="step-grid">
-            <div class="node node-gray">📥 Upload Image</div>
-            <div class="arrow">➔</div>
-            <div class="node node-gray">📸 Read RGB Data</div>
-            <div class="arrow">➔</div>
-            <div class="node node-gray">📏 Resize 224x224</div>
-            <div class="arrow">➔</div>
-            <div class="node node-gray">⚖️ Normalize Tensors</div>
+          <div class="section-title">1️⃣ Input & Image Preprocessing</div>
+          <div class="stage-box">
+            <img class="stage-img" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150&auto=format&fit=crop&q=80" alt="Pet Image Demo"/>
+            <div class="step-grid">
+              <div class="node node-gray">📥 Raw Image</div>
+              <div class="arrow">➔</div>
+              <div class="node node-gray">📸 RGB Parsing</div>
+              <div class="arrow">➔</div>
+              <div class="node node-gray">📏 Resize 224x224</div>
+              <div class="arrow">➔</div>
+              <div class="node node-gray">⚖️ Normalize</div>
+            </div>
           </div>
         </div>
 
@@ -148,11 +168,16 @@ def render_css_flowchart():
 
         <!-- STEP 2 -->
         <div class="flow-section">
-          <div class="section-title">2️⃣ Deep Learning Model Inference</div>
-          <div class="step-grid">
-            <div class="node node-blue">🧠 ResNet50 Neural Network</div>
-            <div class="arrow">➔</div>
-            <div class="node node-blue">📈 Softmax Probabilities</div>
+          <div class="section-title">2️⃣ Deep Neural Network (ResNet-50)</div>
+          <div class="stage-box">
+            <img class="stage-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80" alt="Deep Learning Demo"/>
+            <div class="step-grid">
+              <div class="node node-blue">🧠 Feature Extraction</div>
+              <div class="arrow">➔</div>
+              <div class="node node-blue">⚡ Conv Layers</div>
+              <div class="arrow">➔</div>
+              <div class="node node-blue">📈 Softmax Logits</div>
+            </div>
           </div>
         </div>
 
@@ -160,12 +185,16 @@ def render_css_flowchart():
 
         <!-- STEP 3 -->
         <div class="flow-section">
-          <div class="section-title">3️⃣ Group Logic & Final Output</div>
-          <div class="step-grid">
-            <div class="node node-orange">❓ Is Top Match Cat or Dog?</div>
-            <div class="arrow">➔</div>
-            <div class="node node-green">🏁 Classify Cat / Dog</div>
-            <div class="node node-green">🏁 Classify Other</div>
+          <div class="section-title">3️⃣ Categorization & Prediction Output</div>
+          <div class="stage-box">
+            <img class="stage-img" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80" alt="Output Classification Demo"/>
+            <div class="step-grid">
+              <div class="node node-orange">❓ Label Mapping</div>
+              <div class="arrow">➔</div>
+              <div class="node node-green">🐱 Cat Class</div>
+              <div class="node node-green">🐶 Dog Class</div>
+              <div class="node node-green">❓ Other Class</div>
+            </div>
           </div>
         </div>
 
@@ -173,8 +202,7 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    # Height set to 620px to ensure Step 3 is fully visible without clipping
-    components.html(html_code, height=620, scrolling=False)
+    components.html(html_code, height=520, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -273,10 +301,9 @@ nav_choice = st.radio(
     "",
     ["🏠 Home", "🔮 Prediction", "ℹ️ About"],
     horizontal=True,
-    key='nav'
+    key='nav',
+    label_visibility="collapsed"
 )
-
-st.divider()
 
 # =========================================================
 # PAGE 1: HOME PAGE
@@ -285,7 +312,7 @@ if nav_choice == "🏠 Home":
     st.markdown("### 🧬 Automated Deep Learning Pet Recognition Engine")
     
     st.markdown(
-        "<p style='color: #4A5568; font-size: 1rem; line-height: 1.7;'>"
+        "<p style='font-size: 0.98rem; line-height: 1.6;'>"
         "Welcome! This application utilizes state-of-the-art Deep Computer Vision to instantly analyze "
         "identify and classify uploaded images. Built on top of a 50-layer Deep Residual Neural Network "
         "(ResNet50) the system evaluates visual feature representations across 1,000 object categories "
@@ -300,8 +327,8 @@ if nav_choice == "🏠 Home":
     with col_a:
         st.markdown(
             '<div class="feature-card" style="border-left-color: #FF6B6B;">'
-            '<div class="feature-card-title">1. Input Preprocessing</div>'
-            '<div class="feature-card-desc">Raw image frames are normalized color-space corrected (RGB) dynamic-resized to 224x224 and converted into PyTorch tensors.</div>'
+            '<div class="feature-card-title">1. Preprocessing</div>'
+            '<div class="feature-card-desc">Raw image frames are normalized color-space corrected (RGB) resized to 224x224 and converted into PyTorch tensors.</div>'
             '</div>', unsafe_allow_html=True
         )
     with col_b:
@@ -326,7 +353,6 @@ if nav_choice == "🏠 Home":
     render_css_flowchart()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.write("")
     st.markdown("#### 🎯 Core Capabilities Highlight")
     
     col1, col2, col3 = st.columns(3)
@@ -350,15 +376,16 @@ elif nav_choice == "🔮 Prediction":
             "<p class='sub-text'>"
             "Upload any pet image below to analyze it. "
             "The model will classify whether it is a <span class='highlight-text'>🐱 Cat</span> "
-            "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>!"
+            "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>"
             "</p>", 
             unsafe_allow_html=True
         )
 
         st.markdown("### 📥 Step 1: Upload Your Image")
         file = st.file_uploader(
-            "Choose a pet image file (JPG, JPEG, PNG, WEBP)... 📸", 
-            type=["jpg", "jpeg", "png", "webp"]
+            "Choose a pet image file (JPG, JPEG, PNG, WEBP)", 
+            type=["jpg", "jpeg", "png", "webp"],
+            label_visibility="collapsed"
         )
 
         if file is not None:
@@ -370,7 +397,7 @@ elif nav_choice == "🔮 Prediction":
 
     elif st.session_state.page == 'results':
         st.markdown("<h2 style='text-align: center; font-family: Outfit, sans-serif;'>📋 Analysis Report</h2>", unsafe_allow_html=True)
-        st.markdown("<p class='sub-text'>Here are the classification findings from our AI model!</p>", unsafe_allow_html=True)
+        st.markdown("<p class='sub-text'>Here are the classification findings from our AI model</p>", unsafe_allow_html=True)
         
         if st.session_state.uploaded_file is not None:
             image = Image.open(st.session_state.uploaded_file).convert("RGB")
@@ -382,7 +409,7 @@ elif nav_choice == "🔮 Prediction":
                 st.image(image, use_container_width=True)
 
             with col2:
-                with st.spinner("🧠 Scanning visual patterns... 🔍"):
+                with st.spinner("🧠 Scanning visual patterns..."):
                     pred_class, score, raw_label, top3_list = classify_image(image)
 
                 if pred_class == "Cat":
@@ -395,18 +422,16 @@ elif nav_choice == "🔮 Prediction":
                 st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
                 st.progress(min(int(score), 100))
 
-                st.markdown("---")
                 st.markdown("##### 📈 Top Feature Matches:")
                 for feat_name, feat_score in top3_list:
                     st.write(f"**{feat_name}**: `{feat_score:.1f}%`")
                     st.progress(min(int(feat_score), 100))
 
-                st.markdown("---")
                 with st.expander("🔬 View Technical Details"):
                     st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
                     st.write(f"🏷️ **Mapped Grouping:** `{pred_class}`")
 
-            st.divider()
+            st.write("")
             st.button("🔄 Upload Another Image", on_click=go_to_upload)
         else:
             st.warning("No image found!")
@@ -425,9 +450,9 @@ elif nav_choice == "ℹ️ About":
         Residual connections resolve the vanishing gradient problem enabling the network to learn rich feature representations.
 
         #### 📚 Dataset & Categorization Mapping
-        - Pre-trained on **ImageNet-1k** (containing over 1 million images across 1,000 classes).
-        - Includes extensive sub-categories ranging from specific dog breeds (*Golden Retriever Pembroke Welsh Corgi Siberian Husky*) to feline variants (*Siamese Persian Tabby*).
-        - Logic filters aggregate specific breed detection tokens into clean easy-to-read **Cat** **Dog** or **Other** umbrella designations.
+        * Pre-trained on **ImageNet-1k** (containing over 1 million images across 1,000 classes).
+        * Includes extensive sub-categories ranging from specific dog breeds (*Golden Retriever, Pembroke Welsh Corgi, Siberian Husky*) to feline variants (*Siamese, Persian, Tabby*).
+        * Logic filters aggregate specific breed detection tokens into clean easy-to-read **Cat**, **Dog**, or **Other** umbrella designations.
 
         #### 💻 Tech Stack
         * **Framework:** PyTorch & Torchvision
@@ -435,6 +460,5 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-
-st.markdown("---")
+    
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
