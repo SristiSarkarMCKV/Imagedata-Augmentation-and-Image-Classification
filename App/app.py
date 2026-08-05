@@ -2,7 +2,6 @@ import streamlit as st
 import torch
 from PIL import Image
 from torchvision import models
-
 # ---------------------------------------------------------
 # Page Setup & Configuration
 # ---------------------------------------------------------
@@ -269,7 +268,7 @@ if st.session_state.page == 'upload':
         "<p class='sub-text'>"
         "Upload any pet image below to analyze it. "
         "The website will classify whether it is a <span class='highlight-text'>🐱 Cat</span>, "
-        "<span class='highlight-text'>🐶 Dog</span>, or <span class='highlight-text'>❓ Other</span>!"
+        "<span class='highlight-text'>🐶 Dog</span> or <span class='highlight-text'>❓ Other</span>!"
         "</p>", 
         unsafe_allow_html=True
     )
