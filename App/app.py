@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects custom CSS to ensure cards, boxes, and text dynamically shift between Light and Dark themes."""
+    """Injects CSS supporting Streamlit theme-switching & high contrast."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -28,21 +28,19 @@ def inject_custom_styles(bg_url):
         "h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { display: none !important; opacity: 0 !important; }\n"
         "a[href*='#'] { display: none !important; }\n"
 
-        "::-webkit-scrollbar { width: 12px; }\n"
+        "::-webkit-scrollbar { width: 10px; }\n"
         "::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.7); }\n"
-        "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #FF781F, #FF9800, #F57C00); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.25); }\n"
-        "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
+        "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #FF781F, #FF9800); border-radius: 10px; }\n"
+        
         ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
         
-        "/* ========================================================= */\n"
-        "/* LIGHT THEME DEFAULT STYLES */\n"
-        "/* ========================================================= */\n"
+        "/* Main Glassmorphism Container */\n"
         ".block-container {\n"
         "  background: rgba(255, 255, 255, 0.96);\n"
         "  color: #1E293B !important;\n"
-        "  border-radius: 28px;\n"
-        "  padding: 35px 30px !important;\n"
-        "  margin-top: 25px;\n"
+        "  border-radius: 24px;\n"
+        "  padding: 25px 20px !important;\n"
+        "  margin-top: 15px;\n"
         "  margin-bottom: 25px;\n"
         "  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);\n"
         "  backdrop-filter: blur(14px);\n"
@@ -57,62 +55,50 @@ def inject_custom_styles(bg_url):
         "  padding: 16px;\n"
         "  border: 1px solid #E2E8F0;\n"
         "  border-left: 5px solid #4ECDC4;\n"
-        "  height: 100%;\n"
-        "  box-shadow: 0 4px 12px rgba(0,0,0,0.04);\n"
+        "  margin-bottom: 10px;\n"
         "}\n"
-        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #1E293B; font-size: 1.05rem; margin-bottom: 6px; }\n"
-        ".feature-card-desc { color: #334155; font-size: 0.88rem; line-height: 1.5; }\n"
+        ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #1E293B; font-size: 1rem; margin-bottom: 4px; }\n"
+        ".feature-card-desc { color: #334155; font-size: 0.85rem; line-height: 1.4; }\n"
 
-        "/* Navigation Radio Tabs */\n"
-        "div[data-testid='stRadio'] > div { justify-content: center; gap: 12px; border: none !important; }\n"
+        "/* Navigation Radio Button Tweaks */\n"
+        "div[data-testid='stRadio'] > div { justify-content: center; gap: 8px; flex-wrap: wrap; }\n"
         "div[data-testid='stRadio'] label {\n"
         "  background: #F1F5F9 !important;\n"
         "  border: 1.5px solid #CBD5E0 !important;\n"
         "  border-radius: 12px;\n"
-        "  padding: 8px 18px;\n"
+        "  padding: 6px 14px;\n"
         "  font-family: 'Outfit', sans-serif;\n"
         "  font-weight: 700;\n"
-        "  transition: all 0.2s ease-in-out;\n"
         "}\n"
         "div[data-testid='stRadio'] label p, div[data-testid='stRadio'] label span {\n"
         "  color: #0F172A !important;\n"
         "  font-weight: 800 !important;\n"
-        "  font-size: 0.95rem !important;\n"
-        "}\n"
-        "div[data-testid='stRadio'] label:hover {\n"
-        "  border-color: #FF6B6B !important;\n"
-        "  background: #FFFFFF !important;\n"
+        "  font-size: 0.9rem !important;\n"
         "}\n"
 
-        "/* Alert Boxes Light Theme */\n"
+        "/* Alerts Light Theme */\n"
         "div[data-testid='stAlert'] { background-color: #F8FAFC !important; color: #0F172A !important; font-weight: 600; border-radius: 14px; border: 1px solid #CBD5E0 !important; }\n"
         "div[data-testid='stAlert'] p, div[data-testid='stAlert'] span { color: #0F172A !important; font-weight: 600 !important; }\n"
         "div[data-testid='stAlert'] strong { color: #000000 !important; font-weight: 800 !important; }\n"
 
         "/* ========================================================= */\n"
-        "/* DARK THEME ADAPTIVE STYLES (Switches dark bg & light text) */\n"
+        "/* DARK THEME SUPPORT (FOR BOTH OS & STREAMLIT DARK SETTING) */\n"
         "/* ========================================================= */\n"
         "@media (prefers-color-scheme: dark) {\n"
         "  .block-container {\n"
-        "    background: rgba(15, 23, 42, 0.94) !important;\n"
+        "    background: rgba(15, 23, 42, 0.95) !important;\n"
         "    color: #F8FAFC !important;\n"
-        "    border: 1px solid rgba(255, 255, 255, 0.12) !important;\n"
+        "    border: 1px solid rgba(255, 255, 255, 0.15) !important;\n"
         "  }\n"
-        "  \n"
-        "  /* All Texts Become Light Color */\n"
         "  p, span, label, h1, h2, h3, h4, h5, h6, caption { color: #F8FAFC !important; }\n"
         "  .sub-text { color: #CBD5E0 !important; }\n"
-        "  \n"
-        "  /* Feature Cards Dark Mode Background & Borders */\n"
         "  .feature-card {\n"
         "    background: #1E293B !important;\n"
         "    border: 1px solid #334155 !important;\n"
         "    border-left: 5px solid #4ECDC4 !important;\n"
         "  }\n"
         "  .feature-card-title { color: #F8FAFC !important; }\n"
-        "  .feature-card-desc { color: #94A3B8 !important; }\n"
-        "  \n"
-        "  /* Radio Buttons Dark Mode Styling */\n"
+        "  .feature-card-desc { color: #CBD5E0 !important; }\n"
         "  div[data-testid='stRadio'] label {\n"
         "    background: #1E293B !important;\n"
         "    border: 1.5px solid #334155 !important;\n"
@@ -120,12 +106,6 @@ def inject_custom_styles(bg_url):
         "  div[data-testid='stRadio'] label p, div[data-testid='stRadio'] label span {\n"
         "    color: #F8FAFC !important;\n"
         "  }\n"
-        "  div[data-testid='stRadio'] label:hover {\n"
-        "    background: #334155 !important;\n"
-        "    border-color: #FF6B6B !important;\n"
-        "  }\n"
-
-        "  /* Alert Boxes Dark Mode */\n"
         "  div[data-testid='stAlert'] {\n"
         "    background-color: #1E293B !important;\n"
         "    border: 1px solid #334155 !important;\n"
@@ -138,44 +118,40 @@ def inject_custom_styles(bg_url):
         "  }\n"
         "}\n"
 
-        "/* General Utility Classes */\n"
-        ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 5px; letter-spacing: -0.5px; }\n"
-        ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 1rem; color: #4A5568; font-weight: 500; line-height: 1.6; margin-bottom: 20px; }\n"
+        ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 5px; }\n"
+        ".sub-text { font-family: 'Poppins', sans-serif; text-align: center; font-size: 0.95rem; color: #4A5568; font-weight: 500; line-height: 1.5; margin-bottom: 15px; }\n"
         ".highlight-text { color: #FF6B6B; font-weight: 700; }\n"
         
-        ".diagram-container { background: transparent; padding: 0px; margin-top: 10px; margin-bottom: 20px; border: none; }\n"
+        ".diagram-container { background: transparent; padding: 0px; margin-top: 5px; margin-bottom: 15px; border: none; }\n"
         
-        ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
+        ".result-card { border-radius: 18px; padding: 18px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }\n"
         ".result-card p { color: white !important; }\n"
         ".result-cat { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }\n"
         ".result-dog { background: linear-gradient(135deg, #4299E1, #3182CE); }\n"
         ".result-other { background: linear-gradient(135deg, #ED8936, #ECC94B); }\n"
-        ".card-title { font-size: 1.5rem; margin: 0; letter-spacing: 0.5px; color: #FFFFFF !important; }\n"
+        ".card-title { font-size: 1.3rem; margin: 0; color: #FFFFFF !important; }\n"
         
-        "div[data-testid='stFileUploader'] { border: 3px dashed #4ECDC4; border-radius: 20px; background: rgba(247, 250, 252, 0.2); padding: 15px; transition: all 0.3s ease; }\n"
-        "div[data-testid='stFileUploader']:hover { border-color: #FF6B6B; transform: translateY(-2px); }\n"
+        "div[data-testid='stFileUploader'] { border: 2.5px dashed #4ECDC4; border-radius: 16px; background: rgba(247, 250, 252, 0.2); padding: 10px; }\n"
         
-        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; border-radius: 16px; border: none; padding: 12px 28px; width: 100%; transition: all 0.3s ease; box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35); }\n"
-        ".stButton>button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5); }\n"
+        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem; border-radius: 14px; border: none; padding: 10px 20px; width: 100%; box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35); }\n"
         
-        "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 2rem !important; color: #38BDF8 !important; font-weight: 800; }\n"
-        "hr { margin: 15px 0 !important; border-color: #CBD5E0 !important; }\n"
-        "ul { list-style-type: none !important; padding-left: 0 !important; }\n"
-        "li { padding: 4px 0; }\n"
+        "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 1.8rem !important; color: #38BDF8 !important; font-weight: 800; }\n"
+        "hr { margin: 12px 0 !important; border-color: #CBD5E0 !important; }\n"
         "</style>"
     )
     st.markdown(css, unsafe_allow_html=True)
 
 
 def render_css_flowchart():
-    """Renders theme-adaptive visual workflow diagram using dynamic CSS variables."""
+    """Renders theme-adaptive and mobile-responsive visual workflow diagram."""
     html_code = """
     <!DOCTYPE html>
     <html>
     <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 0; margin: 0; overflow-x: auto; }
+        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 0; margin: 0; width: 100%; }
         
         :root {
           --bg-section: #F8FAFC;
@@ -199,15 +175,16 @@ def render_css_flowchart():
           }
         }
 
-        .flow-wrapper { display: flex; flex-direction: column; gap: 12px; width: 100%; min-width: 300px; }
-        .flow-section { background: var(--bg-section); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; }
-        .section-title { font-size: 0.85rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .stage-box { display: flex; gap: 12px; align-items: center; }
+        .flow-wrapper { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .flow-section { background: var(--bg-section); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px; }
+        .section-title { font-size: 0.8rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
         
-        .stage-img { width: 75px; height: 75px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
+        .stage-box { display: flex; gap: 10px; align-items: center; }
+        
+        .stage-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
         
         .step-grid { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
-        .node { padding: 7px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 95px; text-align: center; }
+        .node { padding: 6px 8px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex: 1 1 auto; min-width: 85px; text-align: center; }
         
         .node-gray { background: var(--node-gray-bg); border: 1.5px solid var(--node-gray-border); color: var(--node-gray-text); }
         .node-blue { background: #EBF8FF; border: 1.5px solid #90CDF4; color: #2B6CB0; }
@@ -220,10 +197,22 @@ def render_css_flowchart():
           .node-green { background: #132A1C; border-color: #276749; color: #9AE6B4; }
         }
 
-        .cat-img-box { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--node-gray-border); margin-top: 4px; }
+        .cat-img-box { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; border: 1px solid var(--node-gray-border); margin-top: 2px; }
         
-        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.85rem; }
-        .down-arrow { text-align: center; font-size: 1rem; color: var(--arrow-color); margin: -6px 0; }
+        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.8rem; }
+        .down-arrow { text-align: center; font-size: 0.9rem; color: var(--arrow-color); margin: -4px 0; }
+
+        /* ========================================================= */
+        /* MOBILE RESPONSIVE LAYOUT (PREVENTS CROPPING / HORIZONTAL OVERFLOW) */
+        /* ========================================================= */
+        @media (max-width: 600px) {
+          .stage-box { flex-direction: column; align-items: stretch; }
+          .stage-img { width: 100%; height: 90px; }
+          .step-grid { flex-direction: column; width: 100%; align-items: stretch; }
+          .arrow { display: none; } /* Hide horizontal arrows on narrow mobile screens */
+          .node { width: 100%; margin-bottom: 4px; }
+          .cat-img-box { width: 50px; height: 50px; }
+        }
       </style>
     </head>
     <body>
@@ -299,7 +288,8 @@ def render_css_flowchart():
     </body>
     </html>
     """
-    components.html(html_code, height=520, scrolling=False)
+    # Dynamic component height to fit desktop or stacked mobile view fully
+    components.html(html_code, height=750, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -409,7 +399,7 @@ if nav_choice == "🏠 Home":
     st.markdown("### 🧬 Automated Deep Learning Pet Recognition Engine")
     
     st.markdown(
-        "<p style='font-size: 0.98rem; line-height: 1.6;'>"
+        "<p style='font-size: 0.95rem; line-height: 1.6;'>"
         "Welcome! This application utilizes state-of-the-art Deep Computer Vision to instantly analyze "
         "identify and classify uploaded images. Built on top of a 50-layer Deep Residual Neural Network "
         "(ResNet50) the system evaluates visual feature representations across 1,000 object categories "
