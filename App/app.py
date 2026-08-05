@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects custom styling and removes Streamlit anchor icons and empty boxes."""
+    """Injects CSS styling to fix contrast issues in both Light and Dark modes."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -46,6 +46,11 @@ def inject_custom_styles(bg_url):
         "  backdrop-filter: blur(14px);\n"
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
         "}\n"
+
+        "/* FIX CONTRAST FOR ALL CALLOUT BOXES (info, success, warning) */\n"
+        "div[data-testid='stAlert'] { color: #1A202C !important; font-weight: 500; border-radius: 14px; }\n"
+        "div[data-testid='stAlert'] p { color: #1A202C !important; font-weight: 500; }\n"
+        "div[data-testid='stAlert'] strong { color: #000000 !important; font-weight: 800; }\n"
         
         "/* Dark Mode Overrides */\n"
         "@media (prefers-color-scheme: dark) {\n"
@@ -61,6 +66,9 @@ def inject_custom_styles(bg_url):
         "  .diagram-container { background: #0F172A !important; border-color: #334155 !important; }\n"
         "  div[data-testid='stRadio'] label { background: rgba(30, 41, 59, 0.9) !important; color: #F1F5F9 !important; border-color: #475569 !important; }\n"
         "  p, span, label, h1, h2, h3, h4, h5, h6 { color: #F1F5F9 !important; }\n"
+        "  div[data-testid='stAlert'] { background-color: #1E293B !important; color: #F1F5F9 !important; border-color: #475569 !important; }\n"
+        "  div[data-testid='stAlert'] p { color: #F1F5F9 !important; }\n"
+        "  div[data-testid='stAlert'] strong { color: #FFFFFF !important; }\n"
         "}\n"
 
         ".main-title { font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 5px; letter-spacing: -0.5px; }\n"
@@ -73,7 +81,7 @@ def inject_custom_styles(bg_url):
         
         ".feature-card { background: #F8FAFC; border-radius: 14px; padding: 16px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }\n"
         ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.05rem; margin-bottom: 6px; }\n"
-        ".feature-card-desc { color: #718096; font-size: 0.88rem; line-height: 1.5; }\n"
+        ".feature-card-desc { color: #4A5568; font-size: 0.88rem; line-height: 1.5; }\n"
         
         ".diagram-container { background: #FFFFFF; padding: 12px; border-radius: 16px; border: 1px solid #E2E8F0; margin-top: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         
@@ -100,7 +108,7 @@ def inject_custom_styles(bg_url):
 
 
 def render_css_flowchart():
-    """Renders theme-adaptive visual workflow diagram with requested stage images and category animal images."""
+    """Renders theme-adaptive visual workflow diagram with question mark icon for Other class."""
     html_code = """
     <!DOCTYPE html>
     <html>
@@ -191,7 +199,7 @@ def render_css_flowchart():
 
         <div class="down-arrow">⬇️</div>
 
-        <!-- STAGE 3: CATEGORIZATION WITH ANIMAL IMAGES BELOW NODES -->
+        <!-- STAGE 3: CATEGORIZATION WITH QUESTION MARK FOR OTHER CLASS -->
         <div class="flow-section">
           <div class="section-title">3️⃣ Categorization & Prediction Output</div>
           <div class="stage-box">
@@ -199,22 +207,22 @@ def render_css_flowchart():
               <div class="node node-orange">❓ Label Mapping</div>
               <div class="arrow">➔</div>
               
-              <!-- Cat Node + Image Below -->
+              <!-- Cat Node -->
               <div class="node node-green">
                 <span>🐱 Cat Class</span>
                 <img class="cat-img-box" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=100&auto=format&fit=crop&q=80" alt="Cat Category"/>
               </div>
 
-              <!-- Dog Node + Image Below -->
+              <!-- Dog Node -->
               <div class="node node-green">
                 <span>🐶 Dog Class</span>
                 <img class="cat-img-box" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=100&auto=format&fit=crop&q=80" alt="Dog Category"/>
               </div>
 
-              <!-- Other Node + Image Below -->
+              <!-- Other Node (Question Mark Image) -->
               <div class="node node-green">
                 <span>❓ Other Class</span>
-                <img class="cat-img-box" src="https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=100&auto=format&fit=crop&q=80" alt="Other Category"/>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80" alt="Other Category Question Mark"/>
               </div>
 
             </div>
@@ -483,4 +491,5 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
+    
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
