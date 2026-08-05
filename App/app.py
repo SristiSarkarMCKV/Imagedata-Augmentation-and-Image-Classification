@@ -51,7 +51,7 @@ def inject_custom_styles(bg_url):
 
         "/* UNIFORM SECTION WRAPPER TO FORCE CONSISTENT GAPS */\n"
         ".content-section {\n"
-        "  margin-top: 18px !important;\n"
+        "  margin-top: 100px !important;\n"
         "  margin-bottom: 0px !important;\n"
         "}\n"
 
@@ -431,33 +431,27 @@ elif nav_choice == "🔮 Prediction":
             
             for i in range(4):
                 with cols[i]:
-                    st.markdown(f"**{sample_keys[i]}**")
+                    st.markdown(f"<div style='text-align: center; font-weight: 700; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
                     st.image(sample_images[sample_keys[i]], use_container_width=True)
-                    if st.button(sample_keys[i], key=f"btn_{i}"):
+                    if st.button("🚀 Analyze Image and View Results", key=f"btn_{i}"):
                         st.session_state.selected_sample_url = sample_images[sample_keys[i]]
 
             cols_row2 = st.columns(4)
             for i in range(4, 8):
                 with cols_row2[i-4]:
-                    st.markdown(f"**{sample_keys[i]}**")
+                    st.markdown(f"<div style='text-align: center; font-weight: 700; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
                     st.image(sample_images[sample_keys[i]], use_container_width=True)
-                    if st.button(sample_keys[i], key=f"btn_{i}"):
+                    if st.button("🚀 Analyze Image and View Results", key=f"btn_{i}"):
                         st.session_state.selected_sample_url = sample_images[sample_keys[i]]
 
             if st.session_state.selected_sample_url:
-                st.markdown("---")
-                st.markdown("#### Selected Sample Preview:")
-                st.image(st.session_state.selected_sample_url, width=250)
-                
-                def analyze_sample():
-                    try:
-                        response = requests.get(st.session_state.selected_sample_url)
-                        st.session_state.uploaded_file = BytesIO(response.content)
-                        st.session_state.page = 'results'
-                    except Exception as e:
-                        st.error(f"Error loading sample image: {e}")
-
-                st.button("🚀 Analyze Image and View Results", on_click=analyze_sample)
+                try:
+                    response = requests.get(st.session_state.selected_sample_url)
+                    st.session_state.uploaded_file = BytesIO(response.content)
+                    st.session_state.page = 'results'
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error loading sample image: {e}")
 
     elif st.session_state.page == 'results':
         st.markdown("<h2 style='text-align: center; font-family: Outfit, sans-serif;'>📋 Analysis Report</h2>", unsafe_allow_html=True)
