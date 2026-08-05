@@ -19,7 +19,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects robust CSS styling using uniform wrapper spacing and vertical centering to eliminate top sticking."""
+    """Injects robust CSS styling using flow layout and relative positioning to completely prevent layout overlaps across devices."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -35,30 +35,29 @@ def inject_custom_styles(bg_url):
         "::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #FF781F, #FF9800, #F57C00); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.25); }\n"
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
         
-        "/* FULL VIEWPORT CENTERING FOR STAPP */\n"
+        "/* NORMAL DOCUMENT FLOW TO PREVENT VIEWPORT OVERLAPS */\n"
         ".stApp {\n"
         "  background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "');\n"
         "  background-attachment: fixed;\n"
         "  background-size: cover;\n"
         "  background-position: center;\n"
         "  min-height: 100vh;\n"
-        "  display: flex;\n"
-        "  align-items: center;\n"
-        "  justify-content: center;\n"
+        "  overflow-y: auto;\n"
         "}\n"
         
-        "/* Main Adaptive Glassmorphism Container - Middle Aligned */\n"
+        "/* Main Glassmorphism Container with Natural Flow Margins */\n"
         ".block-container {\n"
-        "  background: rgba(255, 255, 255, 0.95);\n"
+        "  background: rgba(255, 255, 255, 0.96);\n"
         "  color: #1A202C;\n"
-        "  border-radius: 28px;\n"
-        "  padding: 24px 20px !important;\n"
-        "  margin: auto !important;\n"
+        "  border-radius: 24px;\n"
+        "  padding: 24px 18px !important;\n"
+        "  margin: 30px auto !important;\n"
         "  max-width: 720px;\n"
-        "  width: 100%;\n"
+        "  width: 92%;\n"
         "  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);\n"
         "  backdrop-filter: blur(14px);\n"
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
+        "  position: relative;\n"
         "}\n"
 
         "/* UNIFORM SECTION WRAPPER TO FORCE CONSISTENT GAPS */\n"
@@ -95,7 +94,7 @@ def inject_custom_styles(bg_url):
         "/* Dark Mode Overrides */\n"
         "@media (prefers-color-scheme: dark) {\n"
         "  .block-container {\n"
-        "    background: rgba(15, 23, 42, 0.92) !important;\n"
+        "    background: rgba(15, 23, 42, 0.94) !important;\n"
         "    color: #F7FAFC !important;\n"
         "    border: 1px solid rgba(255, 255, 255, 0.15);\n"
         "  }\n"
@@ -538,5 +537,4 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
-
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
