@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects custom CSS styling safely."""
+    """Injects custom CSS styling for high visibility and crisp mobile view."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -37,7 +37,7 @@ def inject_custom_styles(bg_url):
         ".feature-card { background: #F7FAFC; border-radius: 16px; padding: 20px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.15rem; margin-bottom: 8px; }\n"
         ".feature-card-desc { color: #718096; font-size: 0.9rem; line-height: 1.5; }\n"
-        ".diagram-container { background: #FFFFFF; padding: 15px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }\n"
+        ".diagram-container { background: #FFFFFF; padding: 15px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
         ".result-cat { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }\n"
         ".result-dog { background: linear-gradient(135deg, #4299E1, #3182CE); }\n"
@@ -53,22 +53,87 @@ def inject_custom_styles(bg_url):
     st.markdown(css, unsafe_allow_html=True)
 
 
-def render_mermaid(code):
-    """Renders landscape Mermaid.js diagram with large crisp fonts."""
-    html = (
-        "<!DOCTYPE html><html><head>"
-        "<script type='module'>"
-        "import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';"
-        "mermaid.initialize({ startOnLoad: true, theme: 'neutral', flowchart: { useMaxWidth: true, htmlLabels: true } });"
-        "</script>"
-        "<style>"
-        "body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; overflow: hidden; }"
-        ".mermaid { width: 100%; display: flex; justify-content: center; }"
-        ".mermaid svg { width: 100% !important; height: auto !important; min-height: 250px; font-size: 13px !important; }"
-        "</style>"
-        "</head><body><div class='mermaid'>" + code + "</div></body></html>"
-    )
-    components.html(html, height=280, scrolling=False)
+def render_mixed_flowchart():
+    """Renders a responsive flowchart with fixed 15px text matching body font size."""
+    html_code = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'neutral',
+            flowchart: { useMaxWidth: false, htmlLabels: true }
+        });
+      </script>
+      <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: 'Poppins', sans-serif;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+        }
+        .mermaid {
+            width: 100%;
+        }
+        .mermaid text {
+            font-size: 15px !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 600 !important;
+        }
+        .node rect, .node circle, .node polygon {
+            stroke-width: 2px !important;
+        }
+        .edgeLabel {
+            background-color: #ffffff !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="mermaid">
+      graph TD
+        subgraph Step1 ["1️⃣ INPUT PREPROCESSING (Horizontal)"]
+            direction LR
+            A["📥 Upload Image"] --> B["📸 Read RGB Data"]
+            B --> C["📏 Resize 224x224"]
+            C --> D["⚖️ Normalize Tensors"]
+        end
+
+        subgraph Step2 ["2️⃣ MODEL INFERENCE & LOGIC (Horizontal)"]
+            direction LR
+            D2["🧠 ResNet50 Architecture"] --> E["📈 Probabilities (Softmax)"]
+            E --> F{"❓ Top Match Cat / Dog?"}
+        end
+
+        subgraph Step3 ["3️⃣ FINAL OUTPUT CLASSIFICATION (Horizontal)"]
+            direction LR
+            G1["🏁 Result: CAT / DOG"]
+            G2["🏁 Result: OTHER"]
+        end
+
+        Step1 --> Step2
+        F -- "Yes" --> G1
+        F -- "No" --> G2
+
+        classDef inputStyle fill:#E2E8F0,stroke:#4A5568,stroke-width:2px,rx:8,ry:8;
+        classDef modelStyle fill:#C4F1F9,stroke:#00B5D8,stroke-width:2px,rx:8,ry:8,color:#000;
+        classDef decisionStyle fill:#FEEBC8,stroke:#DD6B20,stroke-width:2px,color:#000;
+        classDef resultStyle fill:#C6F6D5,stroke:#38A169,stroke-width:2px,rx:8,ry:8,color:#000;
+
+        class A,B,C,D inputStyle;
+        class D2,E modelStyle;
+        class F decisionStyle;
+        class G1,G2 resultStyle;
+      </div>
+    </body>
+    </html>
+    """
+    components.html(html_code, height=520, scrolling=True)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -216,31 +281,8 @@ if nav_choice == "🏠 Home":
     st.write("")
     st.markdown("#### 📊 Visual Workflow Diagram")
     
-    # Updated to LR (Left to Right) for wide, clear, horizontal layout
-    mermaid_code = """
-    graph LR
-        Start("📥 Upload Image") --> Read("📸 Read RGB")
-        Read --> Resize("📏 Resize 224x224")
-        Resize --> Normalize("⚖️ Normalize Tensors")
-        Normalize --> Model("🧠 ResNet50 Model")
-        Model --> Softmax("📈 Probabilities")
-        Softmax --> Top1{"❓ Cat or Dog?"}
-        Top1 -- Yes --> Final("🏁 Cat / Dog")
-        Top1 -- No --> Other("🏁 Other Class")
-
-        classDef process fill:#E2E8F0,stroke:#718096,stroke-width:1.5px,rx:6,ry:6;
-        classDef model fill:#C4F1F9,stroke:#00B5D8,stroke-width:2px,rx:10,ry:10,color:#000;
-        classDef decision fill:#FEEBC8,stroke:#DD6B20,stroke-width:1.5px,color:#000;
-        classDef endNode fill:#C6F6D5,stroke:#38A169,stroke-width:2px,rx:8,ry:8,color:#000;
-
-        class Start,Read,Resize,Normalize,Softmax process;
-        class Model model;
-        class Top1 decision;
-        class Final,Other endNode;
-    """
-    
     st.markdown('<div class="diagram-container">', unsafe_allow_html=True)
-    render_mermaid(mermaid_code)
+    render_mixed_flowchart()
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("")
@@ -329,6 +371,7 @@ elif nav_choice == "🔮 Prediction":
             st.warning("No image found!")
             st.button("⬅️ Back to Upload Page", on_click=go_to_upload)
 
+
 # =========================================================
 # PAGE 3: ABOUT PAGE
 # =========================================================
@@ -351,6 +394,7 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
+
 
 st.markdown("---")
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
