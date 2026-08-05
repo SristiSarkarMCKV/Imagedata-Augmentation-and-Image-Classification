@@ -24,10 +24,9 @@ def inject_custom_styles(bg_url):
     
     html, body, [class*='css'] {{ font-family: 'Poppins', sans-serif; }}
     
-    /* HIDE STREAMLIT LINK/ANCHOR ICONS NEXT TO HEADINGS */
-    [data-testid='stHeaderActionElements'], .stHeadingAnchor, a.data-testid-stHeaderActionElements, .css-1544g2n {{ display: none !important; visibility: hidden !important; }}
+    /* HIDE STREAMLIT LINK/ANCHOR ICONS */
+    [data-testid='stHeaderActionElements'], .stHeadingAnchor, a.data-testid-stHeaderActionElements {{ display: none !important; visibility: hidden !important; }}
     h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {{ display: none !important; opacity: 0 !important; }}
-    a[href*='#'] {{ display: none !important; }}
 
     ::-webkit-scrollbar {{ width: 10px; }}
     ::-webkit-scrollbar-track {{ background: rgba(15, 23, 42, 0.7); }}
@@ -40,14 +39,14 @@ def inject_custom_styles(bg_url):
         background-position: center; 
     }}
     
-    /* Main Dark Glassmorphism Container */
+    /* Main Dark Glassmorphism Container with compact padding */
     .block-container {{
       background: rgba(15, 23, 42, 0.95) !important;
       color: #F8FAFC !important;
-      border-radius: 24px;
-      padding: 25px 20px !important;
-      margin-top: 15px;
-      margin-bottom: 25px;
+      border-radius: 20px;
+      padding: 18px 16px !important;
+      margin-top: 10px;
+      margin-bottom: 15px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -56,69 +55,69 @@ def inject_custom_styles(bg_url):
     p, span, label, h1, h2, h3, h4, h5, h6, caption {{ color: #F8FAFC !important; }}
     .sub-text {{ color: #CBD5E0 !important; }}
 
+    /* Remove background style blocks for core capability cards, text-only styling matching theme */
     .feature-card {{
-      background: #1E293B !important;
-      border-radius: 14px;
-      padding: 16px;
-      border: 1px solid #334155 !important;
-      border-left: 5px solid #4ECDC4 !important;
-      margin-bottom: 10px;
+      background: transparent !important;
+      border-radius: 12px;
+      padding: 10px 4px;
+      border: none !important;
+      border-left: 4px solid #4ECDC4 !important;
+      margin-bottom: 6px;
     }}
-    .feature-card-title {{ font-family: 'Outfit', sans-serif; font-weight: 800; color: #F8FAFC !important; font-size: 1rem; margin-bottom: 4px; }}
-    .feature-card-desc {{ color: #CBD5E0 !important; font-size: 0.85rem; line-height: 1.4; }}
+    .feature-card-title {{ font-family: 'Outfit', sans-serif; font-weight: 800; color: #38BDF8 !important; font-size: 0.95rem; margin-bottom: 2px; }}
+    .feature-card-desc {{ color: #CBD5E0 !important; font-size: 0.82rem; line-height: 1.35; }}
 
     /* Navigation Radio Button Styling */
     div[data-testid='stRadio'] > div {{ justify-content: center; gap: 8px; flex-wrap: wrap; }}
     div[data-testid='stRadio'] label {{
       background: #1E293B !important;
       border: 1.5px solid #334155 !important;
-      border-radius: 12px;
-      padding: 6px 14px;
+      border-radius: 10px;
+      padding: 4px 12px;
       font-family: 'Outfit', sans-serif;
-      font-weight: 700;
     }}
     div[data-testid='stRadio'] label p, div[data-testid='stRadio'] label span {{
       color: #F8FAFC !important;
       font-weight: 800 !important;
-      font-size: 0.9rem !important;
+      font-size: 0.85rem !important;
     }}
 
     /* Alert Boxes */
     div[data-testid='stAlert'] {{ 
-      background-color: #1E293B !important; 
+      background-color: transparent !important; 
       color: #F8FAFC !important; 
-      font-weight: 600; 
-      border-radius: 14px; 
-      border: 1px solid #334155 !important; 
+      border-radius: 10px; 
+      border: 1px solid #334155 !important;
+      padding: 8px 12px !important;
     }}
-    div[data-testid='stAlert'] p, div[data-testid='stAlert'] span {{ color: #F8FAFC !important; font-weight: 600 !important; }}
-    div[data-testid='stAlert'] strong {{ color: #38BDF8 !important; font-weight: 800 !important; }}
+    div[data-testid='stAlert'] p, div[data-testid='stAlert'] span {{ color: #CBD5E0 !important; font-size: 0.8rem !important; }}
+    div[data-testid='stAlert'] strong {{ color: #38BDF8 !important; }}
 
-    .main-title {{ font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 5px; }}
+    .main-title {{ font-family: 'Outfit', sans-serif; text-align: center; background: linear-gradient(135deg, #FF6B6B, #FF8E53, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.9rem; font-weight: 900; margin-bottom: 0px; padding-bottom: 0px; }}
     .highlight-text {{ color: #FF6B6B; font-weight: 700; }}
     
-    .diagram-container {{ background: transparent; padding: 0px; margin-top: 5px; margin-bottom: 15px; border: none; }}
+    .diagram-container {{ background: transparent; padding: 0px; margin-top: 2px; margin-bottom: 8px; border: none; }}
     
-    .result-card {{ border-radius: 18px; padding: 18px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }}
+    .result-card {{ border-radius: 14px; padding: 14px; text-align: center; color: white !important; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 10px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); }}
     .result-card p {{ color: white !important; }}
     .result-cat {{ background: linear-gradient(135deg, #FF6B6B, #FF8E53); }}
     .result-dog {{ background: linear-gradient(135deg, #4299E1, #3182CE); }}
     .result-other {{ background: linear-gradient(135deg, #ED8936, #ECC94B); }}
-    .card-title {{ font-size: 1.3rem; margin: 0; color: #FFFFFF !important; }}
+    .card-title {{ font-size: 1.15rem; margin: 0; color: #FFFFFF !important; }}
     
-    div[data-testid='stFileUploader'] {{ border: 2.5px dashed #4ECDC4; border-radius: 16px; background: rgba(30, 41, 59, 0.5); padding: 10px; }}
+    div[data-testid='stFileUploader'] {{ border: 2px dashed #4ECDC4; border-radius: 14px; background: rgba(30, 41, 59, 0.3); padding: 6px; }}
     
-    .stButton>button {{ background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem; border-radius: 14px; border: none; padding: 10px 20px; width: 100%; box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35); }}
+    .stButton>button {{ background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; border-radius: 12px; border: none; padding: 8px 16px; width: 100%; box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3); }}
     
-    [data-testid='stMetricValue'] {{ font-family: 'Outfit', sans-serif; font-size: 1.8rem !important; color: #38BDF8 !important; font-weight: 800; }}
-    hr {{ margin: 12px 0 !important; border-color: #334155 !important; }}
+    [data-testid='stMetricValue'] {{ font-family: 'Outfit', sans-serif; font-size: 1.6rem !important; color: #38BDF8 !important; font-weight: 800; }}
+    hr {{ margin: 8px 0 !important; border-color: #334155 !important; }}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
 
 
 def render_css_flowchart():
-    """Renders theme-adaptive and mobile-responsive visual workflow diagram."""
+    """Renders theme-adaptive and mobile-responsive flowchart with zero text background boxes and auto-sizing."""
     html_code = """
     <!DOCTYPE html>
     <html>
@@ -126,10 +125,10 @@ def render_css_flowchart():
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 0; margin: 0; width: 100%; color: #F8FAFC; }
+        body { font-family: 'Poppins', sans-serif; background: transparent; padding: 2px; margin: 0; width: 100%; color: #F8FAFC; }
         
         :root {
-          --bg-section: #1E293B;
+          --bg-section: transparent;
           --border-color: #334155;
           --title-color: #38BDF8;
           --node-gray-bg: #0F172A;
@@ -138,46 +137,44 @@ def render_css_flowchart():
           --arrow-color: #94A3B8;
         }
 
-        .flow-wrapper { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        .flow-section { background: var(--bg-section); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px; }
-        .section-title { font-size: 0.8rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .flow-wrapper { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+        .flow-section { background: var(--bg-section); border: none; border-radius: 0px; padding: 2px 0; }
+        .section-title { font-size: 0.78rem; font-weight: 800; color: var(--title-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
         
-        .stage-box { display: flex; gap: 10px; align-items: center; }
+        .stage-box { display: flex; gap: 8px; align-items: center; }
+        .stage-img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; border: 1.5px solid var(--node-gray-border); flex-shrink: 0; }
         
-        .stage-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 2px solid var(--node-gray-border); flex-shrink: 0; }
+        .step-grid { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; flex: 1; }
+        .node { padding: 5px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); flex: 1 1 auto; min-width: 75px; text-align: center; }
         
-        .step-grid { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
-        .node { padding: 6px 8px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); flex: 1 1 auto; min-width: 85px; text-align: center; }
-        
-        .node-gray { background: var(--node-gray-bg); border: 1.5px solid var(--node-gray-border); color: var(--node-gray-text); }
-        .node-blue { background: #172A46; border: 1.5px solid #2B6CB0; color: #90CDF4; }
-        .node-orange { background: #322318; border: 1.5px solid #C05621; color: #FBD38D; }
-        .node-green { background: #132A1C; border: 1.5px solid #276749; color: #9AE6B4; }
+        .node-gray { background: var(--node-gray-bg); border: 1px solid var(--node-gray-border); color: var(--node-gray-text); }
+        .node-blue { background: #172A46; border: 1px solid #2B6CB0; color: #90CDF4; }
+        .node-orange { background: #322318; border: 1px solid #C05621; color: #FBD38D; }
+        .node-green { background: #132A1C; border: 1px solid #276749; color: #9AE6B4; }
 
-        .cat-img-box { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; border: 1px solid var(--node-gray-border); margin-top: 2px; }
+        .cat-img-box { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; border: 1px solid var(--node-gray-border); margin-top: 1px; }
         
-        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.8rem; }
-        .down-arrow { text-align: center; font-size: 0.9rem; color: var(--arrow-color); margin: -4px 0; }
+        .arrow { color: var(--arrow-color); font-weight: bold; font-size: 0.75rem; }
+        .down-arrow { text-align: center; font-size: 0.8rem; color: var(--arrow-color); margin: -2px 0; }
 
-        /* Mobile Breakpoint Fixes */
         @media (max-width: 600px) {
-          .stage-box { flex-direction: column; align-items: stretch; }
-          .stage-img { width: 100%; height: 90px; }
-          .step-grid { flex-direction: column; width: 100%; align-items: stretch; }
+          .stage-box { flex-direction: column; align-items: stretch; gap: 6px; }
+          .stage-img { width: 100%; height: 70px; }
+          .step-grid { flex-direction: column; width: 100%; align-items: stretch; gap: 4px; }
           .arrow { display: none; }
-          .node { width: 100%; margin-bottom: 4px; }
-          .cat-img-box { width: 50px; height: 50px; }
+          .node { width: 100%; margin-bottom: 2px; padding: 6px; }
+          .cat-img-box { width: 42px; height: 42px; }
         }
       </style>
     </head>
     <body>
-      <div class="flow-wrapper">
+      <div class="flow-wrapper" id="flowWrapper">
         
-        <!-- STAGE 1: GALLERY OF IMAGES -->
+        <!-- STAGE 1 -->
         <div class="flow-section">
           <div class="section-title">1️⃣ Input & Image Preprocessing</div>
           <div class="stage-box">
-            <img class="stage-img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&auto=format&fit=crop&q=80" alt="Gallery of Images"/>
+            <img class="stage-img" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&auto=format&fit=crop&q=80" alt="Gallery"/>
             <div class="step-grid">
               <div class="node node-gray">📥 Gallery Input</div>
               <div class="arrow">➔</div>
@@ -192,11 +189,11 @@ def render_css_flowchart():
 
         <div class="down-arrow">⬇️</div>
 
-        <!-- STAGE 2: RESIZING & DEEP NETWORK -->
+        <!-- STAGE 2 -->
         <div class="flow-section">
           <div class="section-title">2️⃣ Deep Neural Network (ResNet-50)</div>
           <div class="stage-box">
-            <img class="stage-img" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&auto=format&fit=crop&q=80" alt="Resizing and Neural Net"/>
+            <img class="stage-img" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&auto=format&fit=crop&q=80" alt="ResNet"/>
             <div class="step-grid">
               <div class="node node-blue">🧠 Feature Extraction</div>
               <div class="arrow">➔</div>
@@ -209,7 +206,7 @@ def render_css_flowchart():
 
         <div class="down-arrow">⬇️</div>
 
-        <!-- STAGE 3: CATEGORIZATION -->
+        <!-- STAGE 3 -->
         <div class="flow-section">
           <div class="section-title">3️⃣ Categorization & Prediction Output</div>
           <div class="stage-box">
@@ -217,22 +214,19 @@ def render_css_flowchart():
               <div class="node node-orange">❓ Label Mapping</div>
               <div class="arrow">➔</div>
               
-              <!-- Cat Node -->
               <div class="node node-green">
                 <span>🐱 Cat Class</span>
-                <img class="cat-img-box" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=100&auto=format&fit=crop&q=80" alt="Cat Category"/>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=100&auto=format&fit=crop&q=80" alt="Cat"/>
               </div>
 
-              <!-- Dog Node -->
               <div class="node node-green">
                 <span>🐶 Dog Class</span>
-                <img class="cat-img-box" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=100&auto=format&fit=crop&q=80" alt="Dog Category"/>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=100&auto=format&fit=crop&q=80" alt="Dog"/>
               </div>
 
-              <!-- Other Node -->
               <div class="node node-green">
                 <span>❓ Other Class</span>
-                <img class="cat-img-box" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80" alt="Other Category Question Mark"/>
+                <img class="cat-img-box" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80" alt="Other"/>
               </div>
 
             </div>
@@ -240,11 +234,21 @@ def render_css_flowchart():
         </div>
 
       </div>
+
+      <script>
+        function sendHeight() {
+          const height = document.getElementById('flowWrapper').scrollHeight + 15;
+          window.parent.postMessage({ type: 'streamlit:setComponentHeight', height: height }, '*');
+        }
+        window.addEventListener('load', sendHeight);
+        window.addEventListener('resize', sendHeight);
+        setTimeout(sendHeight, 100);
+      </script>
     </body>
     </html>
     """
-    # Increased component height to 1200 to prevent vertical cropping on screens of all sizes
-    components.html(html_code, height=1200, scrolling=False)
+    # Responsive component height fallback with automatic message resize listener support
+    components.html(html_code, height=540, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -354,7 +358,7 @@ if nav_choice == "🏠 Home":
     st.markdown("### 🧬 Automated Deep Learning Pet Recognition Engine")
     
     st.markdown(
-        "<p style='font-size: 0.95rem; line-height: 1.6;'>"
+        "<p style='font-size: 0.9rem; line-height: 1.4; margin-bottom: 8px;'>"
         "Welcome! This application utilizes state-of-the-art Deep Computer Vision to instantly analyze "
         "identify and classify uploaded images. Built on top of a 50-layer Deep Residual Neural Network "
         "(ResNet50) the system evaluates visual feature representations across 1,000 object categories "
@@ -363,34 +367,32 @@ if nav_choice == "🏠 Home":
         unsafe_allow_html=True
     )
     
-    st.markdown("#### ⚙️ Classification System Architecture & Workflow")
+    st.markdown("#### ⚙️ Classification Architecture")
     
     col_a, col_b, col_c = st.columns(3)
     with col_a:
         st.markdown(
-            '<div class="feature-card" style="border-left-color: #FF6B6B;">'
+            '<div class="feature-card">'
             '<div class="feature-card-title">1. Preprocessing</div>'
-            '<div class="feature-card-desc">Raw image frames are normalized color-space corrected (RGB) resized to 224x224 and converted into PyTorch tensors.</div>'
+            '<div class="feature-card-desc">Raw image frames are normalized, RGB parsed, and resized to tensors.</div>'
             '</div>', unsafe_allow_html=True
         )
     with col_b:
         st.markdown(
-            '<div class="feature-card" style="border-left-color: #4ECDC4;">'
+            '<div class="feature-card">'
             '<div class="feature-card-title">2. ResNet50 Inference</div>'
-            '<div class="feature-card-desc">Visual feature extraction occurs across deep convolutional bottleneck blocks evaluating edge pattern activations.</div>'
+            '<div class="feature-card-desc">Visual feature extraction occurs across deep convolutional blocks.</div>'
             '</div>', unsafe_allow_html=True
         )
     with col_c:
         st.markdown(
-            '<div class="feature-card" style="border-left-color: #4299E1;">'
+            '<div class="feature-card">'
             '<div class="feature-card-title">3. Logic & Classification</div>'
-            '<div class="feature-card-desc">Softmax output logits map top predictions into species groupings calculating confidence metrics.</div>'
+            '<div class="feature-card-desc">Softmax output logits map top predictions into species groupings.</div>'
             '</div>', unsafe_allow_html=True
         )
 
-    st.write("")
     st.markdown("#### 📊 Visual Workflow Diagram")
-    
     st.markdown('<div class="diagram-container">', unsafe_allow_html=True)
     render_css_flowchart()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -439,12 +441,12 @@ elif nav_choice == "🔮 Prediction":
 
     elif st.session_state.page == 'results':
         st.markdown("<h2 style='text-align: center; font-family: Outfit, sans-serif;'>📋 Analysis Report</h2>", unsafe_allow_html=True)
-        st.markdown("<p class='sub-text'>Here are the classification findings from our AI model</p>", unsafe_allow_html=True)
+        st.markdown("<p class='sub-text' style='text-align: center;'>Here are the classification findings from our AI model</p>", unsafe_allow_html=True)
         
         if st.session_state.uploaded_file is not None:
             image = Image.open(st.session_state.uploaded_file).convert("RGB")
             
-            col1, col2 = st.columns([1, 1], gap="large")
+            col1, col2 = st.columns([1, 1], gap="medium")
 
             with col1:
                 st.markdown("#### 🖼️ Image Preview")
@@ -459,7 +461,7 @@ elif nav_choice == "🔮 Prediction":
                 elif pred_class == "Dog":
                     st.markdown('<div class="result-card result-dog"><p class="card-title">🐶 Specified Pet Type: DOG</p></div>', unsafe_allow_html=True)
                 else:
-                    st.markdown(f'<div class="result-card result-other"><p class="card-title">❓ Specified Pet Type: OTHER</p><p style="margin: 5px 0 0 0; font-size: 1.05rem; opacity: 0.9;">(Detected: {raw_label.title()})</p></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="result-card result-other"><p class="card-title">❓ Specified Pet Type: OTHER</p><p style="margin: 4px 0 0 0; font-size: 0.95rem; opacity: 0.9;">(Detected: {raw_label.title()})</p></div>', unsafe_allow_html=True)
 
                 st.metric(label="🎯 Primary Match Score", value=f"{score:.2f}%")
                 st.progress(min(int(score), 100))
@@ -467,7 +469,6 @@ elif nav_choice == "🔮 Prediction":
                 st.markdown("##### 📈 Top Feature Matches:")
                 for feat_name, feat_score in top3_list:
                     st.write(f"**{feat_name}**: `{feat_score:.1f}%`")
-                    st.progress(min(int(feat_score), 100))
 
                 with st.expander("🔬 View Technical Details"):
                     st.write(f"🏷️ **Detected Feature:** `{raw_label.title()}`")
