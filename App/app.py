@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects styles using safe string concatenation to avoid syntax errors."""
+    """Injects custom CSS styling safely."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -37,7 +37,7 @@ def inject_custom_styles(bg_url):
         ".feature-card { background: #F7FAFC; border-radius: 16px; padding: 20px; border-left: 5px solid #4ECDC4; height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }\n"
         ".feature-card-title { font-family: 'Outfit', sans-serif; font-weight: 800; color: #2D3748; font-size: 1.15rem; margin-bottom: 8px; }\n"
         ".feature-card-desc { color: #718096; font-size: 0.9rem; line-height: 1.5; }\n"
-        ".diagram-container { background: #FFFFFF; padding: 10px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }\n"
+        ".diagram-container { background: #FFFFFF; padding: 15px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }\n"
         ".result-card { border-radius: 20px; padding: 22px; text-align: center; color: white; font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }\n"
         ".result-cat { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }\n"
         ".result-dog { background: linear-gradient(135deg, #4299E1, #3182CE); }\n"
@@ -54,19 +54,21 @@ def inject_custom_styles(bg_url):
 
 
 def render_mermaid(code):
-    """Renders compact Mermaid.js diagrams."""
+    """Renders landscape Mermaid.js diagram with large crisp fonts."""
     html = (
         "<!DOCTYPE html><html><head>"
         "<script type='module'>"
         "import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';"
-        "mermaid.initialize({ startOnLoad: true, theme: 'neutral', flowchart: { useMaxWidth: true, htmlLabels: false } });"
+        "mermaid.initialize({ startOnLoad: true, theme: 'neutral', flowchart: { useMaxWidth: true, htmlLabels: true } });"
         "</script>"
-        "<style>body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; overflow: hidden; }"
+        "<style>"
+        "body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; overflow: hidden; }"
         ".mermaid { width: 100%; display: flex; justify-content: center; }"
-        ".mermaid svg { max-width: 100% !important; height: auto !important; max-height: 400px; }</style>"
+        ".mermaid svg { width: 100% !important; height: auto !important; min-height: 250px; font-size: 13px !important; }"
+        "</style>"
         "</head><body><div class='mermaid'>" + code + "</div></body></html>"
     )
-    components.html(html, height=420, scrolling=False)
+    components.html(html, height=280, scrolling=False)
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
@@ -214,35 +216,26 @@ if nav_choice == "🏠 Home":
     st.write("")
     st.markdown("#### 📊 Visual Workflow Diagram")
     
+    # Updated to LR (Left to Right) for wide, clear, horizontal layout
     mermaid_code = """
-    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#EDF2F7', 'edgeLabelBackground':'#ffffff', 'fontSize':'11px'}}}%%
-    graph TD
+    graph LR
         Start("📥 Upload Image") --> Read("📸 Read RGB")
-        
-        subgraph Pipeline ["⚙️ Preprocessing"]
-            Read --> Resize("📏 Resize 224x224")
-            Resize --> Normalize("⚖️ Normalize Tensors")
-        end
-        
+        Read --> Resize("📏 Resize 224x224")
+        Resize --> Normalize("⚖️ Normalize Tensors")
         Normalize --> Model("🧠 ResNet50 Model")
-        Model --> Softmax("📈 Class Probabilities")
-        
-        subgraph Logic ["🧩 Logic Engine"]
-            Softmax --> Top1{"❓ Is Top Match Dog or Cat?"}
-            Top1 -- Yes --> Final("🏁 Cat / Dog Result")
-            Top1 -- No --> Top3{"❓ Top 3 Candidate Check?"}
-            Top3 -- Yes --> Final
-            Top3 -- No --> Other("🏁 Other Class")
-        end
+        Model --> Softmax("📈 Probabilities")
+        Softmax --> Top1{"❓ Cat or Dog?"}
+        Top1 -- Yes --> Final("🏁 Cat / Dog")
+        Top1 -- No --> Other("🏁 Other Class")
 
-        classDef process fill:#E2E8F0,stroke:#718096,stroke-width:1px,rx:6,ry:6;
-        classDef model fill:#C4F1F9,stroke:#00B5D8,stroke-width:1.5px,rx:10,ry:10,color:#000;
-        classDef decision fill:#FEEBC8,stroke:#DD6B20,stroke-width:1px,color:#000;
-        classDef endNode fill:#C6F6D5,stroke:#38A169,stroke-width:1.5px,rx:8,ry:8,color:#000;
+        classDef process fill:#E2E8F0,stroke:#718096,stroke-width:1.5px,rx:6,ry:6;
+        classDef model fill:#C4F1F9,stroke:#00B5D8,stroke-width:2px,rx:10,ry:10,color:#000;
+        classDef decision fill:#FEEBC8,stroke:#DD6B20,stroke-width:1.5px,color:#000;
+        classDef endNode fill:#C6F6D5,stroke:#38A169,stroke-width:2px,rx:8,ry:8,color:#000;
 
         class Start,Read,Resize,Normalize,Softmax process;
         class Model model;
-        class Top1,Top3 decision;
+        class Top1 decision;
         class Final,Other endNode;
     """
     
@@ -335,7 +328,6 @@ elif nav_choice == "🔮 Prediction":
         else:
             st.warning("No image found!")
             st.button("⬅️ Back to Upload Page", on_click=go_to_upload)
-
 
 # =========================================================
 # PAGE 3: ABOUT PAGE
