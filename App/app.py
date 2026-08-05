@@ -17,7 +17,7 @@ PERMANENT_BG_GIF = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzl5dGtmeHJ
 
 
 def inject_custom_styles(bg_url):
-    """Injects CSS styling to ensure fluid responsive layout without extra gaps or wrapper ghost boxes."""
+    """Injects CSS styling with an exact 18px gap maintained between major content sections."""
     css = (
         "<style>\n"
         "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&family=Poppins:wght@300;400;600;700&display=swap');\n"
@@ -34,7 +34,7 @@ def inject_custom_styles(bg_url):
         "::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #E65100, #FF6D00, #FF9800); }\n"
         ".stApp { background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('" + bg_url + "'); background-attachment: fixed; background-size: cover; background-position: center; }\n"
         
-        "/* Main Adaptive Glassmorphism Container & Responsive Gap Tightening */\n"
+        "/* Main Adaptive Glassmorphism Container */\n"
         ".block-container {\n"
         "  background: rgba(255, 255, 255, 0.95);\n"
         "  color: #1A202C;\n"
@@ -47,7 +47,13 @@ def inject_custom_styles(bg_url):
         "  border: 1px solid rgba(255, 255, 255, 0.4);\n"
         "}\n"
 
-        "/* COMPLETE GAP ELIMINATION ACROSS MOBILE AND DESKTOP VIEWS */\n"
+        "/* EXACT 18PX SECTION GAP SPACING CLASS */\n"
+        ".section-gap {\n"
+        "  height: 18px !important;\n"
+        "  width: 100% !important;\n"
+        "  display: block !important;\n"
+        "}\n"
+
         "div.element-container {\n"
         "  margin-bottom: 0px !important;\n"
         "  margin-top: 0px !important;\n"
@@ -56,11 +62,11 @@ def inject_custom_styles(bg_url):
         "  gap: 0.35rem !important;\n"
         "}\n"
         "h3 {\n"
-        "  margin-top: 0.5rem !important;\n"
+        "  margin-top: 0.4rem !important;\n"
         "  margin-bottom: 0.2rem !important;\n"
         "}\n"
         "h4 {\n"
-        "  margin-top: 0.5rem !important;\n"
+        "  margin-top: 0.4rem !important;\n"
         "  margin-bottom: 0.2rem !important;\n"
         "}\n"
         "p {\n"
@@ -319,7 +325,10 @@ if nav_choice == "🏠 Home":
         unsafe_allow_html=True
     )
     
-    st.markdown("#### ⚙️ Classification System Architecture & Workflow")
+    # Exact 18px gap spacer element between segments
+    st.markdown('<div class="section-gap"></div>', unsafe_allow_html=True)
+    
+    st.markdown("### ⚙️ Classification System Architecture & Workflow")
     col_a, col_b, col_c = st.columns(3)
     with col_a:
         st.markdown('<div class="feature-card" style="border-left-color: #FF6B6B;"><div class="feature-card-title">1. Preprocessing</div><div class="feature-card-desc">Raw image frames are normalized color-space corrected (RGB) resized and converted into PyTorch tensors.</div></div>', unsafe_allow_html=True)
@@ -439,4 +448,5 @@ elif nav_choice == "ℹ️ About":
         * **Image Preprocessing:** PIL (Python Imaging Library)
         """
     )
+
 st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
