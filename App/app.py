@@ -120,7 +120,11 @@ def inject_custom_styles(bg_url):
         "div[data-testid='stFileUploader'] { border: 2px dashed #4ECDC4; border-radius: 14px; background: rgba(247, 250, 252, 0.4); padding: 8px; transition: all 0.3s ease; }\n"
         "div[data-testid='stFileUploader']:hover { border-color: #FF6B6B; transform: translateY(-1px); }\n"
         
-        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; border-radius: 12px; border: none; padding: 8px 20px; width: 100%; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35); }\n"
+        "/* FORCE FIXED ASPECT RATIO CONTAINER FOR UNIFORM SAMPLE IMAGE SIZES */\n"
+        ".sample-img-container { width: 100%; height: 110px; overflow: hidden; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #000000; margin-bottom: 4px; }\n"
+        ".sample-img-container img { width: 100%; height: 100%; object-fit: cover; }\n"
+
+        ".stButton>button { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white !important; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.82rem; border-radius: 10px; border: none; padding: 6px 10px; width: 100%; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35); }\n"
         ".stButton>button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5); }\n"
         
         "[data-testid='stMetricValue'] { font-family: 'Outfit', sans-serif; font-size: 1.6rem !important; color: #3182CE !important; font-weight: 800; }\n"
@@ -431,17 +435,17 @@ elif nav_choice == "🔮 Prediction":
             
             for i in range(4):
                 with cols[i]:
-                    st.markdown(f"<div style='text-align: center; font-weight: 700; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
-                    st.image(sample_images[sample_keys[i]], use_container_width=True)
-                    if st.button("🚀 Analyze Image and View Results", key=f"btn_{i}"):
+                    st.markdown(f"<div style='text-align: center; font-weight: 700; font-size: 0.8rem; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='sample-img-container'><img src='{sample_images[sample_keys[i]]}' /></div>", unsafe_allow_html=True)
+                    if st.button(f"🚀 Analyze {sample_keys[i]}", key=f"btn_{i}"):
                         st.session_state.selected_sample_url = sample_images[sample_keys[i]]
 
             cols_row2 = st.columns(4)
             for i in range(4, 8):
                 with cols_row2[i-4]:
-                    st.markdown(f"<div style='text-align: center; font-weight: 700; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
-                    st.image(sample_images[sample_keys[i]], use_container_width=True)
-                    if st.button("🚀 Analyze Image and View Results", key=f"btn_{i}"):
+                    st.markdown(f"<div style='text-align: center; font-weight: 700; font-size: 0.8rem; margin-bottom: 2px;'>{sample_keys[i]}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='sample-img-container'><img src='{sample_images[sample_keys[i]]}' /></div>", unsafe_allow_html=True)
+                    if st.button(f"🚀 Analyze {sample_keys[i]}", key=f"btn_{i}"):
                         st.session_state.selected_sample_url = sample_images[sample_keys[i]]
 
             if st.session_state.selected_sample_url:
