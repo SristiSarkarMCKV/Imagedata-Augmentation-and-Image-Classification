@@ -5,7 +5,6 @@ from torchvision import models
 import streamlit.components.v1 as components
 import requests
 from io import BytesIO
-
 # ---------------------------------------------------------
 # Page Setup & Configuration
 # ---------------------------------------------------------
@@ -550,13 +549,10 @@ elif nav_choice == "ℹ️ About":
     st.markdown(
         """
         * **Name:** Sristi Sarkar
-        * **Professional Profile:** Aspiring AI/ML and Data Science Researcher with a B.Tech in Data Science (CGPA: 8.63) from MCKV Institute of Engineering (MAKAUT).
         * **Contact:** 
           * **Email:** `emailsristisarkar@gmail.com`
           * **Phone:** `8240580651`
-        * **Core Expertise:** Python, Machine Learning, Deep Learning, Computer Vision, and Data Analytics.
-        * **Experience Highlights:** Hands-on industry and research experience across six internships, including roles at **IDEAS Technology Innovation Hub @ Indian Statistical Institute Kolkata**, **NIELIT Kolkata**, and **Edunet Foundation**.
         """
     )
 
-st.caption("⚠️ **Disclaimer:** This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
+st.caption("⚠️ **Disclaimer:** Project built by Sristi Sarkar. This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
