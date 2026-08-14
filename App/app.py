@@ -5,6 +5,7 @@ from torchvision import models
 import streamlit.components.v1 as components
 import requests
 from io import BytesIO
+
 # ---------------------------------------------------------
 # Page Setup & Configuration
 # ---------------------------------------------------------
@@ -142,9 +143,6 @@ def inject_custom_styles(bg_url):
         "hr { margin: 6px 0 !important; border-color: #E2E8F0 !important; }\n"
         "ul { list-style-type: none !important; padding-left: 0 !important; }\n"
         "li { padding: 1px 0; }\n"
-        
-        "/* FOOTER WATERMARK */\n"
-        ".footer-watermark { position: fixed; bottom: 8px; left: 16px; font-size: 0.75rem; color: rgba(255, 255, 255, 0.85); font-family: 'Poppins', sans-serif; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index: 999; pointer-events: none; }\n"
         "</style>"
     )
     st.markdown(css, unsafe_allow_html=True)
@@ -260,9 +258,6 @@ def render_css_flowchart():
 
 
 inject_custom_styles(PERMANENT_BG_GIF)
-
-# Render bottom-left watermark
-st.markdown('<div class="footer-watermark">Project Built by Sristi Sarkar</div>', unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------
@@ -551,8 +546,7 @@ elif nav_choice == "ℹ️ About":
         * **Name:** Sristi Sarkar
         * **Contact:** 
           * **Email:** `emailsristisarkar@gmail.com`
-          * **Phone:** `8240580651`
+          * **Phone:** `+91 8240580651`
         """
     )
-
 st.caption("⚠️ **Disclaimer:** Project built by Sristi Sarkar. This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
