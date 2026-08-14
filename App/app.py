@@ -549,4 +549,4 @@ elif nav_choice == "ℹ️ About":
           * **Phone:** `+91 8240580651`
         """
     )
-st.caption("⚠️ **Disclaimer:** Project built by Sristi Sarkar. This tool is intended for demonstration purposes. Classification confidence depends on image quality lighting and frame composition.")
+st.caption("⚠️ **Disclaimer:**  **AI Powered & Verified image classification model:** Built by Sristi Sarkar for reliable pet image classification. Results depend on image clarity and lighting. Use responsibly for demonstration.") 
